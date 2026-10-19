@@ -1,0 +1,562 @@
+/* ============================================================================
+   admin.css — Tema del CMS de Decap
+   ----------------------------------------------------------------------------
+   Decap compila sus estilos con Emotion, que inyecta en <head> en tiempo de
+   ejecución y gana por orden. Por eso todo lo de aquí lleva !important.
+
+   Los selectores usan [class*="Etiqueta"] porque Emotion genera nombres como
+   `css-<hash>-Etiqueta-...`: la etiqueta original siempre sobrevive en la
+   clase, así que el selector es estable entre versiones.
+
+   La paleta es la misma que la web (assets/css/00-tokens.css) y viene del
+   repositorio del navegador. Ver README.md → "Brand source of truth".
+   ============================================================================ */
+
+:root {
+  --a-bg: #d8d0f6;
+  --a-bg-image:
+    radial-gradient(900px 520px at 8% -10%, #efebfe, transparent 60%),
+    radial-gradient(800px 600px at 100% 100%, #bdb0f0, transparent 62%);
+  --a-surface: #ffffff;
+  --a-surface-2: #f7f6fc;
+  --a-border: #cfc7f2;
+  --a-text: #2a2257;
+  --a-strong: #3b2f8f;
+  --a-muted: #5c5780;
+  --a-accent: #6c5ce7;
+  --a-accent-2: #b9aeef;
+  --a-on-accent: #ffffff;
+  --a-shadow: rgba(59, 47, 143, 0.4);
+  --a-gradient: linear-gradient(135deg, #7b6bf0, #5b4bd8);
+  --a-radius: 10px;
+  --a-radius-sm: 8px;
+}
+
+:root[data-theme='aetherdark'] {
+  --a-bg: #0f0d16;
+  --a-bg-image:
+    radial-gradient(900px 520px at 12% -8%, rgba(139, 123, 245, 0.22), transparent 60%),
+    radial-gradient(700px 500px at 100% 100%, rgba(91, 75, 216, 0.14), transparent 60%);
+  --a-surface: #241e50;
+  --a-surface-2: #1b1640;
+  --a-border: rgba(155, 140, 255, 0.3);
+  --a-text: #e2def5;
+  --a-strong: #ffffff;
+  --a-muted: #a9a2d6;
+  --a-accent: #9b8cff;
+  --a-accent-2: #6c5ce7;
+  --a-on-accent: #ffffff;
+  --a-shadow: rgba(0, 0, 0, 0.6);
+  --a-gradient: linear-gradient(135deg, #7b6bf0, #5b4bd8);
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+   --------------------------------------------------------------------------- */
+
+html,
+body,
+#nc-root {
+  background: var(--a-bg-image) var(--a-bg) !important;
+  background-attachment: fixed !important;
+  color: var(--a-text) !important;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif !important;
+  font-size: 15px !important;
+}
+
+body {
+  min-height: 100vh;
+}
+
+a {
+  color: var(--a-accent) !important;
+}
+
+::selection {
+  background: var(--a-accent) !important;
+  color: var(--a-on-accent) !important;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--a-muted) 45%, transparent) !important;
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+/* ---------------------------------------------------------------------------
+   Marca (la inyectamos nosotros, fuera de #nc-root para que React no la borre)
+   --------------------------------------------------------------------------- */
+
+.aether-brand {
+  position: fixed;
+  top: 28px;
+  left: 28px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--a-strong) !important;
+}
+
+.aether-brand img {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+
+.aether-brand__name {
+  font-family: 'Bricolage Grotesque', 'Plus Jakarta Sans', sans-serif !important;
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--a-strong) !important;
+}
+
+.aether-brand__tag {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--a-muted) !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Login
+   --------------------------------------------------------------------------- */
+
+[class*='StyledAuthenticationPage'] {
+  background: transparent !important;
+  color: var(--a-text) !important;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+}
+
+/* El logo de Decap se sustituye por nuestra marca */
+[class*='DecapLogoIcon'],
+[class*='CustomIconWrapper'] {
+  display: none !important;
+}
+
+[class*='LoginButton-button'] {
+  background: var(--a-gradient) !important;
+  background-image: var(--a-gradient) !important;
+  color: var(--a-on-accent) !important;
+  border: 0 !important;
+  border-radius: var(--a-radius) !important;
+  padding: 12px 22px !important;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 10px 22px -12px var(--a-shadow) !important;
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+}
+
+[class*='LoginButton-button']:hover {
+  transform: translateY(-2px) !important;
+}
+
+[class*='LoginButton-button']:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
+[class*='LoginButton-button'] span,
+[class*='LoginButtonIcon'],
+[class*='ButtonText'] {
+  color: var(--a-on-accent) !important;
+}
+
+[class*='NetlifyCreditIcon'],
+[class*='NetLogo'] {
+  color: var(--a-muted) !important;
+}
+
+[class*='AuthForm'] input,
+[class*='AuthInput'] input,
+input[type='email'],
+input[type='password'] {
+  background: var(--a-surface) !important;
+  color: var(--a-text) !important;
+  border: 1px solid var(--a-border) !important;
+  border-radius: var(--a-radius-sm) !important;
+  padding: 10px 12px !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Cabecera de la app
+   --------------------------------------------------------------------------- */
+
+[class*='HeaderContainer'] {
+  background: color-mix(in srgb, var(--a-bg) 82%, transparent) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border-bottom: 1px solid var(--a-border) !important;
+  color: var(--a-text) !important;
+  box-shadow: none !important;
+}
+
+[class*='AppHeaderLogo'] {
+  color: var(--a-strong) !important;
+  font-family: 'Bricolage Grotesque', 'Plus Jakarta Sans', sans-serif !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.025em !important;
+}
+
+[class*='AppHeaderNavLink'] {
+  color: var(--a-muted) !important;
+  font-weight: 600 !important;
+  border-radius: var(--a-radius-sm) !important;
+}
+
+[class*='AppHeaderNavLink']:hover {
+  color: var(--a-strong) !important;
+  background: color-mix(in srgb, var(--a-text) 8%, transparent) !important;
+}
+
+[class*='AppHeaderButton'],
+[class*='AppHeaderQuickNewButton'],
+[class*='TopBarButton'],
+[class*='AvatarDropdownButton'] {
+  color: var(--a-text) !important;
+  border-radius: var(--a-radius-sm) !important;
+}
+
+[class*='AppHeaderButton']:hover,
+[class*='TopBarButton']:hover {
+  background: color-mix(in srgb, var(--a-text) 8%, transparent) !important;
+}
+
+[class*='AppHeaderSiteLink'] {
+  color: var(--a-muted) !important;
+}
+
+[class*='AppMainContainer'] {
+  background: transparent !important;
+  color: var(--a-text) !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Barra lateral
+   --------------------------------------------------------------------------- */
+
+[class*='SidebarContainer'] {
+  background: var(--a-surface) !important;
+  border-right: 1px solid var(--a-border) !important;
+  color: var(--a-text) !important;
+}
+
+[class*='SidebarHeading'] {
+  color: var(--a-muted) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.09em !important;
+  text-transform: uppercase !important;
+}
+
+[class*='SidebarNavLink'],
+[class*='TreeNavLink'] {
+  color: var(--a-text) !important;
+  border-radius: var(--a-radius-sm) !important;
+  font-weight: 600 !important;
+}
+
+[class*='SidebarNavLink']:hover,
+[class*='TreeNavLink']:hover {
+  background: color-mix(in srgb, var(--a-accent) 12%, transparent) !important;
+  color: var(--a-strong) !important;
+}
+
+[class*='SidebarNavLink'][aria-current='page'],
+[class*='TreeNavLink'][aria-current='page'] {
+  background: color-mix(in srgb, var(--a-accent) 16%, transparent) !important;
+  color: var(--a-strong) !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Colecciones: tarjetas y listas
+   --------------------------------------------------------------------------- */
+
+[class*='Card'],
+[class*='GridCard'],
+[class*='ListCard'],
+[class*='NoteCard'] {
+  background: var(--a-surface) !important;
+  border: 1px solid var(--a-border) !important;
+  border-radius: var(--a-radius) !important;
+  color: var(--a-text) !important;
+  box-shadow: none !important;
+  transition:
+    transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 0.18s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+}
+
+[class*='Card']:hover,
+[class*='GridCard']:hover,
+[class*='ListCard']:hover {
+  transform: translateY(-2px) !important;
+  border-color: var(--a-accent-2) !important;
+}
+
+[class*='CardTitle'],
+[class*='GridCard'] h2,
+[class*='ListCardTitle'] {
+  color: var(--a-strong) !important;
+  font-family: 'Bricolage Grotesque', 'Plus Jakarta Sans', sans-serif !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.025em !important;
+}
+
+[class*='CardText'],
+[class*='CardDateContainer'],
+[class*='CollectionTopDescription'] {
+  color: var(--a-muted) !important;
+}
+
+[class*='CollectionTopHeading'],
+[class*='WorkflowTopHeading'],
+[class*='NotesHeader'] {
+  color: var(--a-strong) !important;
+  font-family: 'Bricolage Grotesque', 'Plus Jakarta Sans', sans-serif !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.025em !important;
+}
+
+[class*='CardImageWrapper'],
+[class*='CardImage'] {
+  border-radius: var(--a-radius-sm) !important;
+}
+
+[class*='ListItem'],
+[class*='StyledListItemTopBar'] {
+  background: var(--a-surface) !important;
+  border-bottom: 1px solid var(--a-border) !important;
+  color: var(--a-text) !important;
+}
+
+[class*='ListItem']:hover {
+  background: var(--a-surface-2) !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Editor
+   --------------------------------------------------------------------------- */
+
+[class*='EditorContainer'],
+[class*='Editor'] {
+  background: transparent !important;
+  color: var(--a-text) !important;
+}
+
+[class*='EditorControlBar'],
+[class*='ToolbarContainer'] {
+  background: var(--a-surface) !important;
+  border: 1px solid var(--a-border) !important;
+  border-radius: var(--a-radius) !important;
+  color: var(--a-text) !important;
+}
+
+[class*='ToolbarButton'],
+[class*='ToolbarDropdown'],
+[class*='ToolbarToggle'],
+[class*='StyledToolbarButton'],
+[class*='ToolbarToggleLabel'] {
+  color: var(--a-text) !important;
+  border-radius: var(--a-radius-sm) !important;
+  font-weight: 600 !important;
+}
+
+[class*='ToolbarButton']:hover,
+[class*='ToolbarDropdown']:hover,
+[class*='ToolbarToggle']:hover {
+  background: color-mix(in srgb, var(--a-accent) 14%, transparent) !important;
+  color: var(--a-strong) !important;
+}
+
+[class*='FieldLabel'],
+[class*='SettingsFieldLabel'] {
+  color: var(--a-strong) !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+}
+
+input[type='text'],
+input[type='number'],
+input[type='date'],
+input[type='url'],
+input[type='email'],
+input[type='password'],
+textarea,
+select {
+  background: var(--a-surface) !important;
+  color: var(--a-text) !important;
+  border: 1px solid var(--a-border) !important;
+  border-radius: var(--a-radius-sm) !important;
+  font-family: inherit !important;
+  font-size: 14px !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--a-accent) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--a-accent) 22%, transparent) !important;
+  outline: none !important;
+}
+
+textarea {
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace) !important;
+  line-height: 1.6 !important;
+}
+
+label {
+  color: var(--a-text) !important;
+}
+
+[class*='ControlErrorsList'] {
+  color: #d93025 !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Botones
+   --------------------------------------------------------------------------- */
+
+[class*='Button'] {
+  border-radius: var(--a-radius-sm) !important;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  font-weight: 600 !important;
+}
+
+[class*='SaveButton'],
+[class*='PublishButton'],
+[class*='AddButton'],
+[class*='UploadButton'] {
+  background: var(--a-gradient) !important;
+  background-image: var(--a-gradient) !important;
+  color: var(--a-on-accent) !important;
+  border: 0 !important;
+  box-shadow: 0 10px 22px -12px var(--a-shadow) !important;
+}
+
+[class*='SaveButton']:hover,
+[class*='PublishButton']:hover,
+[class*='AddButton']:hover {
+  transform: translateY(-1px) !important;
+  color: var(--a-on-accent) !important;
+}
+
+[class*='DeleteButton'],
+[class*='ClearButton'] {
+  color: #d93025 !important;
+}
+
+[class*='PublishedButton'],
+[class*='StatusButton'],
+[class*='CopyButton'],
+[class*='RefreshButton'],
+[class*='BackCollection'],
+[class*='PreviewButtonContainer'] button {
+  background: var(--a-surface-2) !important;
+  color: var(--a-strong) !important;
+  border: 1px solid var(--a-border) !important;
+}
+
+[class*='DropdownList'],
+[class*='ToolbarDropdownWrapper'] {
+  background: var(--a-surface) !important;
+  border: 1px solid var(--a-border) !important;
+  border-radius: var(--a-radius) !important;
+  color: var(--a-text) !important;
+  box-shadow: 0 18px 40px -20px var(--a-shadow) !important;
+}
+
+[class*='StatusDropdownItem']:hover,
+[class*='DropdownList'] [role='menuitem']:hover {
+  background: color-mix(in srgb, var(--a-accent) 14%, transparent) !important;
+  color: var(--a-strong) !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Workflow, notas y media
+   --------------------------------------------------------------------------- */
+
+[class*='WorkflowCardContainer'],
+[class*='WorkflowContainer'],
+[class*='NoteCard'] {
+  background: var(--a-surface) !important;
+  border: 1px solid var(--a-border) !important;
+  border-radius: var(--a-radius) !important;
+  color: var(--a-text) !important;
+}
+
+[class*='WorkflowBadge'] {
+  background: color-mix(in srgb, var(--a-accent) 18%, transparent) !important;
+  color: var(--a-accent) !important;
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+}
+
+[class*='WidgetPreviewContainer'],
+[class*='RawEditorContainer'] {
+  background: var(--a-surface-2) !important;
+  color: var(--a-text) !important;
+  border-radius: var(--a-radius-sm) !important;
+}
+
+[class*='SuggestionHeader'] {
+  color: var(--a-strong) !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Notificaciones
+   --------------------------------------------------------------------------- */
+
+.Toastify {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+}
+
+.Toastify__toast {
+  background: var(--a-surface) !important;
+  color: var(--a-text) !important;
+  border: 1px solid var(--a-border) !important;
+  border-radius: var(--a-radius) !important;
+  box-shadow: 0 18px 40px -20px var(--a-shadow) !important;
+}
+
+.Toastify__toast--success {
+  border-color: var(--a-accent) !important;
+}
+
+.Toastify__toast--error {
+  border-color: #d93025 !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Accesibilidad
+   --------------------------------------------------------------------------- */
+
+:focus-visible {
+  outline: 2px solid var(--a-accent) !important;
+  outline-offset: 2px !important;
+}
+
+@media (max-width: 700px) {
+  .aether-brand {
+    top: 16px;
+    left: 16px;
+  }
+
+  .aether-brand__tag {
+    display: none;
+  }
+}

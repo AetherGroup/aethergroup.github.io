@@ -1,13 +1,41 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="aetherlight">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex" />
     <link href="config.yml" type="text/yaml" rel="cms-config-url" />
     <title>Aetherfox CMS</title>
+
+    <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/plus-jakarta-sans-500-latin.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/bricolage-grotesque-800-latin.woff2" crossorigin />
+    <link rel="stylesheet" href="/assets/css/01-fonts.css" />
+    <link rel="stylesheet" href="/admin/admin.css" />
+
+    <script>
+      (() => {
+        try {
+          const stored = localStorage.getItem('aetherfox:theme');
+          const pref = stored ? JSON.parse(stored) : 'auto';
+          const system = matchMedia('(prefers-color-scheme: dark)').matches ? 'aetherdark' : 'aetherlight';
+          document.documentElement.dataset.theme = !pref || pref === 'auto' ? system : pref === 'aetherdark' ? 'aetherdark' : 'aetherlight';
+        } catch {
+          document.documentElement.dataset.theme = 'aetherlight';
+        }
+      })();
+    </script>
   </head>
   <body>
+    <div class="aether-brand">
+      <img src="/assets/images/brand/aetherfox-logo.webp" alt="" width="38" height="38" />
+      <span>
+        <span class="aether-brand__name">Aetherfox</span>
+        <span class="aether-brand__tag">Content Manager</span>
+      </span>
+    </div>
+
+    <div id="nc-root"></div>
+
     <script src="https://unpkg.com/decap-cms@^3.1.2/dist/decap-cms.js"></script>
   </body>
 </html>
