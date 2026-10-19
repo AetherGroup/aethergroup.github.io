@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "test:handshake": "node test-handshake.mjs"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261019.1",

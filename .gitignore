@@ -45,3 +45,4 @@ reference/
 
 # tipos generados
 src/env.d.ts
+oauth-worker/.secrets.local

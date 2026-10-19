@@ -39,6 +39,21 @@ const readCookie = (request: Request, name: string) => {
 const stateCookie = (value: string, maxAge: number) =>
   `aetherfox_oauth_state=${encodeURIComponent(value)}; Path=/api; HttpOnly; Secure; SameSite=Lax; Max-Age=${maxAge}`;
 
+const postMessagePage = (env: Env, status: 'success' | 'error', content: unknown) => {
+  const target = JSON.stringify(env.CMS_ORIGIN);
+  const success = JSON.stringify(`authorization:github:success:${JSON.stringify(content)}`);
+  const error = JSON.stringify(`authorization:github:error:${JSON.stringify(content)}`);
+  return `<!doctype html><html><body><script>
+    (function () {
+      if (!window.opener) { document.body.textContent = 'Open this page from the CMS.'; return; }
+      var target = ${target};
+      window.opener.postMessage('authorizing:github', target);
+      window.opener.postMessage(${status === 'success' ? success : error}, target);
+      window.close();
+    })();
+  </script></body></html>`;
+};
+
 const handleAuth = async (url: URL, env: Env) => {
   const nonce = crypto.randomUUID();
   const state = `${nonce}.${await sign(nonce, env.STATE_SECRET)}`;
@@ -62,14 +77,20 @@ const handleCallback = async (request: Request, url: URL, env: Env) => {
   const code = url.searchParams.get('code');
   const state = url.searchParams.get('state');
 
-  if (!code || !state) return new Response('Missing code or state', { status: 400 });
+  const fail = (message: string) =>
+    new Response(postMessagePage(env, 'error', { message }), {
+      status: 200,
+      headers: { 'content-type': 'text/html;charset=UTF-8' },
+    });
+
+  if (!code || !state) return fail('Missing code or state');
 
   const sent = readCookie(request, 'aetherfox_oauth_state');
-  if (!sent || sent !== state) return new Response('Invalid state', { status: 400 });
+  if (!sent || sent !== state) return fail('Invalid state');
 
   const [nonce, signature] = state.split('.');
   if (!nonce || !signature || !(await verify(nonce, signature, env.STATE_SECRET))) {
-    return new Response('Invalid state', { status: 400 });
+    return fail('Invalid state');
   }
 
   const response = await fetch('https://github.com/login/oauth/access_token', {
@@ -82,27 +103,26 @@ const handleCallback = async (request: Request, url: URL, env: Env) => {
     }),
   });
 
-  const data = (await response.json()) as { access_token?: string; error?: string };
+  const data = (await response.json()) as {
+    access_token?: string;
+    error?: string;
+    error_description?: string;
+  };
+
   if (data.error || !data.access_token) {
-    return new Response(`OAuth error: ${data.error ?? 'unknown'}`, { status: 401 });
+    return fail(data.error_description || data.error || 'OAuth exchange failed');
   }
 
-  const payload = JSON.stringify({ token: data.access_token, provider: 'github' });
-  const html = `<!doctype html><html><body><script>
-    (function () {
-      var msg = 'authorization:github:success:' + ${JSON.stringify(payload)};
-      window.opener.postMessage(msg, ${JSON.stringify(env.CMS_ORIGIN)});
-      window.close();
-    })();
-  </script></body></html>`;
-
-  return new Response(html, {
-    status: 200,
-    headers: {
-      'content-type': 'text/html;charset=UTF-8',
-      'set-cookie': stateCookie('', 0),
+  return new Response(
+    postMessagePage(env, 'success', { token: data.access_token, provider: 'github' }),
+    {
+      status: 200,
+      headers: {
+        'content-type': 'text/html;charset=UTF-8',
+        'set-cookie': stateCookie('', 0),
+      },
     },
-  });
+  );
 };
 
 const REQUIRED = ['GITHUB_CLIENT_ID', 'GITHUB_CLIENT_SECRET', 'CMS_ORIGIN', 'STATE_SECRET'] as const;
