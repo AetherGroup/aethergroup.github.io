@@ -16,25 +16,27 @@ import Icon from '../components/ui/Icon.astro';
 
   <section class="section section--flush-top">
     <div class="wrap">
-      <div class="section-head">
-        <h2 class="display">Fingerprinting resistance</h2>
-        <p>Each site reads slightly different values, so the picture never adds up.</p>
-      </div>
+      <div class="split">
+        <div class="section-head" style="margin: 0">
+          <h2 class="display">Fingerprinting resistance</h2>
+          <p>Each site reads slightly different values, so the picture never adds up.</p>
+        </div>
 
-      <div class="feature-list">
-        {
-          fingerprinting.map((item) => (
-            <div class="feature-row">
-              <span class="icon-box">
-                <Icon name={item.icon} />
-              </span>
-              <div class="feature-row__body">
-                <b>{item.title}</b>
-                <small>{item.description}</small>
+        <div class="feature-list">
+          {
+            fingerprinting.map((item) => (
+              <div class="feature-row">
+                <span class="icon-box">
+                  <Icon name={item.icon} />
+                </span>
+                <div class="feature-row__body">
+                  <b>{item.title}</b>
+                  <small>{item.description}</small>
+                </div>
               </div>
-            </div>
-          ))
-        }
+            ))
+          }
+        </div>
       </div>
     </div>
   </section>

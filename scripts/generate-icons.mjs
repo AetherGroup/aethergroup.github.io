@@ -45,22 +45,35 @@ await icon(512, { rounded: true, out: 'icon-512.png' });
 
 const ogSvg = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="a" cx="0.1" cy="0" r="0.9">
+    <radialGradient id="a" cx="0.12" cy="0" r="1">
       <stop offset="0" stop-color="#2A2447"/>
       <stop offset="1" stop-color="#0F0D16"/>
     </radialGradient>
-    <linearGradient id="b" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#EFEBFE"/>
-      <stop offset="1" stop-color="#8B7CF0"/>
-    </linearGradient>
   </defs>
   <rect width="1200" height="630" fill="url(#a)"/>
-  <rect x="80" y="150" width="330" height="330" rx="72" fill="url(#b)"/>
-  ${mark(120, 190, 250)}
-  <text x="480" y="290" font-family="Helvetica, Arial, sans-serif" font-size="72" font-weight="bold" fill="#FFFFFF">Aetherfox</text>
-  <text x="480" y="350" font-family="Helvetica, Arial, sans-serif" font-size="30" fill="#A29DB8">The browser with the extras left out.</text>
-  <text x="480" y="410" font-family="Helvetica, Arial, sans-serif" font-size="26" fill="#9B8CFF">No telemetry. No sync. No clutter.</text>
+  <rect x="0" y="0" width="1200" height="4" fill="#6C5CE7"/>
 </svg>`;
 
-await sharp(Buffer.from(ogSvg)).png().toFile(join(social, 'og-default.png'));
+const lockup = await sharp(join(root, 'assets', 'images', 'brand', 'aetherfox-lockup-light.png'))
+  .resize({ width: 460 })
+  .png()
+  .toBuffer();
+
+const lockupBox = await sharp(lockup).metadata();
+
+await sharp(Buffer.from(ogSvg))
+  .composite([
+    { input: lockup, top: 150, left: 90 },
+    {
+      input: Buffer.from(
+        `<svg width="720" height="80" xmlns="http://www.w3.org/2000/svg">
+          <text x="0" y="40" font-family="Helvetica, Arial, sans-serif" font-size="40" font-weight="600" fill="#E2DEF5">The browser with the extras left out.</text>
+        </svg>`,
+      ),
+      top: 150 + lockupBox.height + 34,
+      left: 90,
+    },
+  ])
+  .png()
+  .toFile(join(social, 'og-default.png'));
 console.log('✓ social/og-default.png');

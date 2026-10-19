@@ -24,10 +24,10 @@ const format = (date: Date) =>
       <article>
         <div class="page-article__head">
           <a class="eyebrow" href={withBase('/changelog')}>Changelog</a>
-          <h1 class="display">
+          <div class="page-article__version">
             <span class:list={['badge', `badge--${entry.data.type}`]}>{entry.data.version}</span>
-            {entry.data.title}
-          </h1>
+          </div>
+          <h1 class="display">{entry.data.title}</h1>
           <div class="page-article__meta">
             <time datetime={entry.data.date.toISOString()}>{format(entry.data.date)}</time>
             {

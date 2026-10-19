@@ -66,6 +66,10 @@
     color: var(--c-text-muted);
   }
 
+  .page-article__version {
+    margin-top: var(--sp-4);
+  }
+
   .page-article__layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 240px;
