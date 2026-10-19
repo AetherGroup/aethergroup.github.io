@@ -9,10 +9,18 @@ const SOURCES = ['assets', 'admin'];
 
 const ROOT_FILES = ['.nojekyll', 'robots.txt'];
 
+/** Ficheros de desarrollo que no se publican. */
+const EXCLUDE = new Set(['dev.html', 'config.test.yml']);
+
 async function copyDir(from, to) {
   await cp(from, to, {
     recursive: true,
-    filter: (src) => !src.split(/[\\/]/).pop()?.startsWith('.'),
+    filter: (src) => {
+      const name = src.split(/[\\/]/).pop() ?? '';
+      if (name.startsWith('.')) return false;
+      if (EXCLUDE.has(name)) return false;
+      return true;
+    },
   });
   return countFiles(to);
 }
