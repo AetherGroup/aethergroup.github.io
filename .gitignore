@@ -40,3 +40,7 @@ src/env.d.ts
 
 # reference material
 reference/
+# cloudflare
+oauth-worker/.dev.vars
+oauth-worker/node_modules/
+oauth-worker/.wrangler/

@@ -19,11 +19,11 @@ const sign = async (value: string, secret: string) => {
   return [...new Uint8Array(signature)].map((b) => b.toString(16).padStart(2, '0')).join('');
 };
 
-const verify = async (value: string, secret: string) => {
-  const expected = await sign(value, secret);
-  if (expected.length !== value.length) return false;
+const verify = async (nonce: string, signature: string, secret: string) => {
+  const expected = await sign(nonce, secret);
+  if (expected.length !== signature.length) return false;
   let diff = 0;
-  for (let i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ value.charCodeAt(i);
+  for (let i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ signature.charCodeAt(i);
   return diff === 0;
 };
 
@@ -68,7 +68,7 @@ const handleCallback = async (request: Request, url: URL, env: Env) => {
   if (!sent || sent !== state) return new Response('Invalid state', { status: 400 });
 
   const [nonce, signature] = state.split('.');
-  if (!nonce || !signature || !(await verify(nonce, env.STATE_SECRET))) {
+  if (!nonce || !signature || !(await verify(nonce, signature, env.STATE_SECRET))) {
     return new Response('Invalid state', { status: 400 });
   }
 

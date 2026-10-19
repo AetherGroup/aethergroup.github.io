@@ -1,0 +1,1 @@
+This folder contains the built output assets for the worker "aetherfox-cms-auth" generated at 2026-10-19T18:20:23.580Z.
