@@ -347,10 +347,10 @@ Consecuencia práctica: una utilidad (`utilities`) gana siempre a un componente,
 | `02-reset.css` | `reset` | `box-sizing`, márgenes, `img/svg` display, `button/input` heredados, `:focus-visible`, `::selection`, scrollbar, `[hidden]` | Reglas `*,*::before,*::after` y `button,a` (líneas 14–18) |
 | `03-base.css` | `base` | `body` (fondo, tipografía, `background-attachment:fixed`), `h1–h4`, `p`, `a`, listas, `code/pre`, `blockquote`, `table`, `hr`, `.display`/`.lead`/`.muted`/`.eyebrow` | `body`, `h1`, `.disp`, `.lead` (líneas 16–20, 30–32) |
 | `04-layout.css` | `layout` | `.wrap` (1180px), `.section` (ritmo 84/64/48), `.grid-2/3`, `.split`, `.stack`, `.cluster`, `.page-shell` | `.wrap`, `section`, grids `.hero/.priv/.bento` (19, 29, 49, 51, 56) |
-| `05-components.css` | `components` | `.btn` (+`.btn--secondary`, `.btn--ghost`, `.btn--lg`), `.site-header`, `.site-nav`, `.site-footer`, `.icon`, `.card`, `.bento-card`, `.browser-mock` (+`.tab`, `.bar`, `.url`, `.page`), `.shields`, `.toggle`, `.row` (privacidad), `.chip`, `.chip--gone`, `.download-panel`, `.theme-switcher`, `.post-card`, `.toc`, `.prose` | Bloque de estilos principal (26–68) |
+| `05-components.css` | `components` | `.btn` (+`.btn--secondary`, `.btn--ghost`, `.btn--lg`), `.site-header`, `.site-nav`, `.site-footer`, `.icon`, `.card`, `.bento__card`, `.browser-mock` (+`.mock__tab`, `.mock__bar`, `.mock__url`, `.mock__page`), `.shields`, `.toggle`, `.feature-row`, `.chip`, `.download-panel`, `.theme-switcher`, `.post-card`, `.toc`, `.prose` | Bloque de estilos principal (26–68) |
 | `06-pages.css` | `pages` | `.page-home` (hero, secciones), `.page-news` (listado, filtros), `.page-article` (cabecera, meta, ancho de lectura), `.page-changelog` (timeline, badges de versión), `.page-download` (tabla de plataformas, checksums), `.page-faq` (acordeón), `.page-404` | — (nuevo) |
 | `07-utilities.css` | `utilities` | `.u-visually-hidden`, `.u-mono`, `.u-center`, `.u-stack-*`, `.u-mt-*`, `.u-hide-sm`, `.u-badge-*` | — (nuevo) |
-| `08-print.css` | `print` | Oculta navegación, fuerza fondo blanco, muestra URLs tras enlaces | — (nuevo) |
+| `08-print.css` | `print` | Oculta navegación, fuerza fondo blanco, muestra URLs tras enlaces | — (pendiente, fase 7) |
 
 ### 4.4 Reglas de convención
 
