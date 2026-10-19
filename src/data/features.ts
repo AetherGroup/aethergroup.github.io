@@ -68,6 +68,42 @@ export const shields: { icon: IconName; label: string }[] = [
   { icon: 'cpu', label: 'Processor' },
 ];
 
+export type Probe = {
+  id: string;
+  label: string;
+  safeValue: string;
+  exposedValue: string;
+  safeNote: string;
+  exposedNote: string;
+};
+
+export const probes: Probe[] = [
+  {
+    id: 'canvas',
+    label: 'Canvas',
+    safeValue: 'a7f2·9c1e',
+    exposedValue: 'a7f2·9c1e',
+    safeNote: 'different on every site',
+    exposedNote: 'the same on every site',
+  },
+  {
+    id: 'audio',
+    label: 'Audio',
+    safeValue: '41c9·0d77',
+    exposedValue: '41c9·0d77',
+    safeNote: 'different on every site',
+    exposedNote: 'the same on every site',
+  },
+  {
+    id: 'cpu',
+    label: 'Cores',
+    safeValue: '8',
+    exposedValue: '16',
+    safeNote: 'always the same',
+    exposedNote: 'your real hardware',
+  },
+];
+
 export const platforms = [
   { id: 'windows', label: 'Windows', primary: true },
   { id: 'linux', label: 'Linux', primary: false },
