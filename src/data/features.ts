@@ -62,10 +62,18 @@ export const leftOut: LeftOut[] = [
   },
 ];
 
-export const shields: { icon: IconName; label: string }[] = [
-  { icon: 'canvas', label: 'Canvas images' },
-  { icon: 'audio', label: 'Audio' },
-  { icon: 'cpu', label: 'Processor' },
+export type Shield = {
+  id: string;
+  icon: IconName;
+  label: string;
+};
+
+export const shields: Shield[] = [
+  { id: 'canvas', icon: 'canvas', label: 'Canvas images' },
+  { id: 'text', icon: 'text', label: 'Text measurements' },
+  { id: 'webgl', icon: 'webgl', label: '3D graphics' },
+  { id: 'audio', icon: 'audio', label: 'Audio' },
+  { id: 'cores', icon: 'cpu', label: 'Processor' },
 ];
 
 export type Probe = {
@@ -87,6 +95,22 @@ export const probes: Probe[] = [
     exposedNote: 'the same on every site',
   },
   {
+    id: 'text',
+    label: 'Text',
+    safeValue: '8.42 px',
+    exposedValue: '8.42 px',
+    safeNote: 'different on every site',
+    exposedNote: 'the same on every site',
+  },
+  {
+    id: 'webgl',
+    label: 'WebGL',
+    safeValue: 'generic',
+    exposedValue: 'your GPU',
+    safeNote: 'the same on every site',
+    exposedNote: 'your real graphics card',
+  },
+  {
     id: 'audio',
     label: 'Audio',
     safeValue: '41c9·0d77',
@@ -95,7 +119,7 @@ export const probes: Probe[] = [
     exposedNote: 'the same on every site',
   },
   {
-    id: 'cpu',
+    id: 'cores',
     label: 'Cores',
     safeValue: '8',
     exposedValue: '16',
@@ -103,6 +127,8 @@ export const probes: Probe[] = [
     exposedNote: 'your real hardware',
   },
 ];
+
+export const demoHost = 'example.com';
 
 export const platforms = [
   { id: 'windows', label: 'Windows', primary: true },

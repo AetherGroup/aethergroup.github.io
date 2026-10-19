@@ -1,11 +1,11 @@
 ---
-import { probes, shields } from '../../data/features';
+import { demoHost, probes, shields } from '../../data/features';
 import Icon from '../ui/Icon.astro';
 import { withBase } from '../../lib/url';
 ---
 
 <div class="mock">
-  <div class="mock__window" role="group" aria-label="Aetherfox browser window showing the welcome page">
+  <div class="mock__window" role="group" aria-label="Aetherfox browser window showing a web page">
     <div class="mock__tabs">
       <span class="mock__tab mock__tab--active">
         <img src={withBase('/assets/images/brand/aetherfox-logo.webp')} alt="" width="14" height="14" />
@@ -23,13 +23,13 @@ import { withBase } from '../../lib/url';
       <span class="mock__bar-icon"><Icon name="bk" size="sm" /></span>
       <span class="mock__bar-icon"><Icon name="fw" size="sm" /></span>
       <span class="mock__bar-icon"><Icon name="rl" size="sm" /></span>
-      <span class="mock__url">aetherfox://welcome</span>
+      <span class="mock__url">https://{demoHost}</span>
       <span class="mock__bar-icon"><Icon name="mn" size="sm" /></span>
     </div>
 
     <div class="mock__page">
       <div class="mock__inspector">
-        <div class="mock__inspector-title">What this site sees</div>
+        <div class="mock__inspector-title">What {demoHost} sees</div>
         <ul class="mock__probes">
           {
             probes.map((probe) => (
@@ -52,8 +52,8 @@ import { withBase } from '../../lib/url';
       <img
         src={withBase('/assets/images/brand/aetherfox-logo.webp')}
         alt=""
-        width="160"
-        height="158"
+        width="140"
+        height="138"
       />
       <b>Welcome to Aetherfox</b>
       <span>Pick up where you left off.</span>
@@ -61,24 +61,34 @@ import { withBase } from '../../lib/url';
   </div>
 
   <div class="shields" role="group" aria-label="Aetherfox Shields">
-    <h4>Aetherfox Shields</h4>
-    {
-      shields.map((item) => {
-        const probe = probes.find((p) => p.id === item.icon);
-        return (
-          <button
-            class="shields__row"
-            type="button"
-            role="switch"
-            aria-checked="true"
-            data-shield={probe?.id ?? item.icon}
-          >
-            <Icon name={item.icon} size="sm" />
-            <span>{item.label}</span>
-            <i class="toggle" />
-          </button>
-        );
-      })
-    }
+    <div class="shields__head">
+      <span class="shields__title">Aetherfox Shields</span>
+      <span class="shields__host">{demoHost}</span>
+    </div>
+
+    <ul class="shields__list">
+      {
+        shields.map((item) => (
+          <li>
+            <button
+              class="shields__row"
+              type="button"
+              role="switch"
+              aria-checked="true"
+              data-shield={item.id}
+            >
+              <span class="shields__icon">
+                <Icon name={item.icon} size="sm" />
+              </span>
+              <span class="shields__text">{item.label}</span>
+              <span class="shields__switch">
+                <i class="toggle" />
+                <span class="shields__state" data-on="true">On</span>
+              </span>
+            </button>
+          </li>
+        ))
+      }
+    </ul>
   </div>
 </div>

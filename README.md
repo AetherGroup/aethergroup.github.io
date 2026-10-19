@@ -73,6 +73,20 @@ Icons and the social image are generated from the brand logo:
 node scripts/generate-icons.mjs
 ```
 
+## Brand source of truth
+
+The palette and the Shields panel are not invented here. They come from the
+browser repository, so the site and the product stay in sync:
+
+| What | Where |
+|---|---|
+| Light and dark theme tokens | `AetherGroup/aetherfox` → `patches/core/14-protection-panels.patch` (`--aether-*` block) |
+| Fingerprinting protections and their names | `patches/core/13-fingerprinting-core.patch` |
+| Logo and new tab artwork | `branding/source/aether-mark.png`, `branding/source/aether-bg.png` |
+
+`assets/css/00-tokens.css` mirrors those values in the site's own token names.
+When the browser theme changes, the same values have to be updated there.
+
 ## Architecture
 
 See `ARCHITECTURE.md` for the full rationale: folder structure, CSS and JS

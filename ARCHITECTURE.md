@@ -22,6 +22,16 @@
 
 ### 0.1 Datos del proyecto (decididos)
 
+> **Fuente de verdad del branding:** la paleta y el panel de escudos **no** se inventan aquí. Vienen del repositorio del navegador (AetherGroup/aetherfox):
+>
+> | Qué | Dónde |
+> |---|---|
+> | Tokens del tema claro y oscuro | patches/core/14-protection-panels.patch (bloque --aether-* con light-dark()) |
+> | Protecciones de fingerprinting y sus nombres | patches/core/13-fingerprinting-core.patch |
+> | Logo y fondo de nueva pestaña | randing/source/aether-mark.png, randing/source/aether-bg.png |
+>
+> ssets/css/00-tokens.css refleja esos valores con los nombres de token de la web. Si cambia el tema del navegador, hay que actualizarlos ahí.
+
 | Dato | Valor | Estado |
 |---|---|---|
 | Organización | `AetherGroup` (GitHub) | ✅ Decidido |
