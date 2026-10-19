@@ -43,4 +43,4 @@ reference/
 # cloudflare
 oauth-worker/.dev.vars
 oauth-worker/node_modules/
-oauth-worker/.wrangler/
+oauth-worker/.wrangler/oauth-worker/.wrangler-dry/
