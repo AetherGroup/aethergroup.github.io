@@ -1,4 +1,5 @@
 import { readFile, writeFile, repoBranch } from '../lib/api.js';
+import { marked } from '../vendor/marked.js';
 import { parseFrontmatter, stringifyFrontmatter, slugify, formatDate } from '../lib/markdown.js';
 
 const dateFields = ['date', 'updated'];
@@ -146,21 +147,38 @@ export async function renderEditor(root, schema, collection, fileName) {
       </div>
 
       <div class="adm-editor__body">
-        <p class="adm-eyebrow">${isNew ? 'New' : 'Editing'} ${collection.label_singular.toLowerCase()}</p>
-        <h1 class="adm-editor__title" data-title-preview>${
-          data[idField] || `Untitled ${collection.label_singular.toLowerCase()}`
-        }</h1>
+        <div class="adm-tabs" role="tablist">
+          <button class="adm-tab is-active" type="button" role="tab" aria-selected="true" data-tab="write">
+            Write
+          </button>
+          <button class="adm-tab" type="button" role="tab" aria-selected="false" data-tab="preview">
+            Preview
+          </button>
+        </div>
 
-        <form class="adm-form" data-form>
-          ${collection.fields.map((field) => renderField(field, data)).join('')}
+        <div data-panel="write">
+          <p class="adm-eyebrow">${isNew ? 'New' : 'Editing'} ${collection.label_singular.toLowerCase()}</p>
+          <h1 class="adm-editor__title" data-title-preview>${
+            data[idField] || `Untitled ${collection.label_singular.toLowerCase()}`
+          }</h1>
 
-          <div class="adm-field adm-field--markdown">
-            <label class="adm-field__label" for="f-body">Content <span class="adm-field__optional">markdown</span></label>
-            <textarea class="adm-input adm-input--body" id="f-body" name="body" rows="18">${escapeHtml(
-              body,
-            )}</textarea>
-          </div>
-        </form>
+          <form class="adm-form" data-form>
+            ${collection.fields.map((field) => renderField(field, data)).join('')}
+
+            <div class="adm-field adm-field--markdown">
+              <label class="adm-field__label" for="f-body">Content <span class="adm-field__optional">markdown</span></label>
+              <textarea class="adm-input adm-input--body" id="f-body" name="body" rows="18">${escapeHtml(
+                body,
+              )}</textarea>
+            </div>
+          </form>
+        </div>
+
+        <div data-panel="preview" hidden>
+          <article class="adm-preview" data-preview>
+            <p class="adm-loading">Rendering…</p>
+          </article>
+        </div>
       </div>
     </div>
   `;
@@ -169,23 +187,10 @@ export async function renderEditor(root, schema, collection, fileName) {
   const status = root.querySelector('[data-status]');
   const saveButton = root.querySelector('[data-save]');
   const titlePreview = root.querySelector('[data-title-preview]');
+  const previewHost = root.querySelector('[data-preview]');
 
-  const idInput = form.querySelector(`[name="${idField}"]`);
-  idInput?.addEventListener('input', () => {
-    titlePreview.textContent = idInput.value || `Untitled ${collection.label_singular.toLowerCase()}`;
-  });
-
-  for (const toggle of form.querySelectorAll('[data-switch]')) {
-    toggle.addEventListener('click', () => {
-      const on = toggle.getAttribute('aria-checked') !== 'true';
-      toggle.setAttribute('aria-checked', String(on));
-      toggle.querySelector('span').textContent = on ? 'Yes' : 'No';
-    });
-  }
-
-  saveButton.addEventListener('click', async () => {
+  const readValues = () => {
     const values = {};
-
     for (const field of collection.fields) {
       if (field.widget === 'boolean') {
         const toggle = form.querySelector(`[data-switch="${field.name}"]`);
@@ -203,7 +208,71 @@ export async function renderEditor(root, schema, collection, fileName) {
       }
       values[field.name] = value;
     }
+    return values;
+  };
 
+  const renderPreview = async () => {
+    const values = readValues();
+    const markdown = form.querySelector('[name="body"]').value;
+
+    let html = '';
+    try {
+      html = marked.parse(markdown || '_No content yet._', { gfm: true, breaks: false });
+    } catch (error) {
+      previewHost.innerHTML = `<p class="adm-error">${error.message}</p>`;
+      return;
+    }
+
+    const date = values.date ? formatDate(values.date) : '';
+    const meta = [date, values.category, values.author].filter(Boolean).join(' · ');
+
+    previewHost.innerHTML = `
+      <div class="page-article__head">
+        <h1 class="adm-preview__title">${escapeHtml(values[idField] || 'Untitled')}</h1>
+        ${meta ? `<div class="page-article__meta">${escapeHtml(meta)}</div>` : ''}
+      </div>
+      <div class="prose">${html}</div>
+    `;
+  };
+
+  let previewTimer = null;
+  const schedulePreview = () => {
+    clearTimeout(previewTimer);
+    previewTimer = setTimeout(renderPreview, 500);
+  };
+
+  for (const tab of root.querySelectorAll('[data-tab]')) {
+    tab.addEventListener('click', () => {
+      const mode = tab.dataset.tab;
+      for (const other of root.querySelectorAll('[data-tab]')) {
+        const active = other === tab;
+        other.classList.toggle('is-active', active);
+        other.setAttribute('aria-selected', String(active));
+      }
+      for (const panel of root.querySelectorAll('[data-panel]')) {
+        panel.hidden = panel.dataset.panel !== mode;
+      }
+      if (mode === 'preview') renderPreview();
+    });
+  }
+
+  form.addEventListener('input', schedulePreview);
+
+  const idInput = form.querySelector(`[name="${idField}"]`);
+  idInput?.addEventListener('input', () => {
+    titlePreview.textContent = idInput.value || `Untitled ${collection.label_singular.toLowerCase()}`;
+  });
+
+  for (const toggle of form.querySelectorAll('[data-switch]')) {
+    toggle.addEventListener('click', () => {
+      const on = toggle.getAttribute('aria-checked') !== 'true';
+      toggle.setAttribute('aria-checked', String(on));
+      toggle.querySelector('span').textContent = on ? 'Yes' : 'No';
+    });
+  }
+
+  saveButton.addEventListener('click', async () => {
+    const values = readValues();
     const markdown = form.querySelector('[name="body"]').value;
     const content = stringifyFrontmatter(values, markdown);
 

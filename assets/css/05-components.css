@@ -895,6 +895,30 @@
     border-radius: var(--r-md);
   }
 
+  .prose table {
+    width: 100%;
+    margin-top: var(--sp-6);
+    border-collapse: collapse;
+    font-size: 0.94em;
+  }
+
+  .prose th,
+  .prose td {
+    padding: 10px 12px;
+    border: 1px solid var(--c-border);
+    text-align: left;
+  }
+
+  .prose th {
+    background: var(--c-surface-2);
+    color: var(--c-text-strong);
+    font-weight: 700;
+  }
+
+  .prose hr {
+    margin-block: var(--sp-8);
+  }
+
   
 
   .toc {

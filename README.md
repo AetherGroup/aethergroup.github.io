@@ -103,7 +103,15 @@ page rather than a form in a panel.
 | `admin/lib/auth-store.js` | Where the token lives |
 | `admin/lib/markdown.js` | Frontmatter parsing and writing |
 | `admin/schema.json` | **The single source of truth** for collections and fields |
+| `admin/vendor/marked.js` | Markdown renderer for the preview, vendored so nothing is loaded from a third party |
 | `admin/views/*.js` | Login, collection list, editor, media and workflow panels |
+
+### The editor
+
+Two tabs: **Write** and **Preview**. The preview renders the Markdown with
+the site's own `.prose` styles, so what you see is what the article will look
+like. It re-renders as you type, and it works offline: the Markdown is parsed
+in the browser, not sent anywhere.
 
 ### How it saves
 
