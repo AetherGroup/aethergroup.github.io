@@ -13,7 +13,9 @@
     "check:links": "node scripts/check-links.mjs",
     "icons": "node scripts/generate-icons.mjs",
     "fonts": "node scripts/fetch-fonts.mjs",
-    "check:admin": "node scripts/check-admin-selectors.mjs"
+    "check:admin": "node scripts/check-admin-selectors.mjs",
+    "prebuild": "node scripts/check-schema.mjs",
+    "check:schema": "node scripts/check-schema.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",

@@ -147,37 +147,31 @@ export async function renderEditor(root, schema, collection, fileName) {
       </div>
 
       <div class="adm-editor__body">
-        <div class="adm-tabs" role="tablist">
-          <button class="adm-tab is-active" type="button" role="tab" aria-selected="true" data-tab="write">
-            Write
-          </button>
-          <button class="adm-tab" type="button" role="tab" aria-selected="false" data-tab="preview">
-            Preview
-          </button>
-        </div>
+        <div class="adm-editor__split">
+          <div class="adm-editor__write">
+            <p class="adm-eyebrow">${isNew ? 'New' : 'Editing'} ${collection.label_singular.toLowerCase()}</p>
+            <h1 class="adm-editor__title" data-title-preview>${
+              data[idField] || `Untitled ${collection.label_singular.toLowerCase()}`
+            }</h1>
 
-        <div data-panel="write">
-          <p class="adm-eyebrow">${isNew ? 'New' : 'Editing'} ${collection.label_singular.toLowerCase()}</p>
-          <h1 class="adm-editor__title" data-title-preview>${
-            data[idField] || `Untitled ${collection.label_singular.toLowerCase()}`
-          }</h1>
+            <form class="adm-form" data-form>
+              ${collection.fields.map((field) => renderField(field, data)).join('')}
 
-          <form class="adm-form" data-form>
-            ${collection.fields.map((field) => renderField(field, data)).join('')}
+              <div class="adm-field adm-field--markdown">
+                <label class="adm-field__label" for="f-body">Content <span class="adm-field__optional">markdown</span></label>
+                <textarea class="adm-input adm-input--body" id="f-body" name="body" rows="18">${escapeHtml(
+                  body,
+                )}</textarea>
+              </div>
+            </form>
+          </div>
 
-            <div class="adm-field adm-field--markdown">
-              <label class="adm-field__label" for="f-body">Content <span class="adm-field__optional">markdown</span></label>
-              <textarea class="adm-input adm-input--body" id="f-body" name="body" rows="18">${escapeHtml(
-                body,
-              )}</textarea>
-            </div>
-          </form>
-        </div>
-
-        <div data-panel="preview" hidden>
-          <article class="adm-preview" data-preview>
-            <p class="adm-loading">Rendering…</p>
-          </article>
+          <div class="adm-editor__preview">
+            <div class="adm-editor__preview-head">Preview</div>
+            <article class="adm-preview" data-preview>
+              <p class="adm-loading">Rendering…</p>
+            </article>
+          </div>
         </div>
       </div>
     </div>
@@ -188,6 +182,17 @@ export async function renderEditor(root, schema, collection, fileName) {
   const saveButton = root.querySelector('[data-save]');
   const titlePreview = root.querySelector('[data-title-preview]');
   const previewHost = root.querySelector('[data-preview]');
+
+  const missingRequired = () => {
+    const missing = [];
+    for (const field of collection.fields) {
+      if (field.required === false) continue;
+      if (field.widget === 'boolean' || field.widget === 'list') continue;
+      const input = form.querySelector(`[name="${field.name}"]`);
+      if (!input || !String(input.value).trim()) missing.push(field.label);
+    }
+    return missing;
+  };
 
   const readValues = () => {
     const values = {};
@@ -241,27 +246,14 @@ export async function renderEditor(root, schema, collection, fileName) {
     previewTimer = setTimeout(renderPreview, 500);
   };
 
-  for (const tab of root.querySelectorAll('[data-tab]')) {
-    tab.addEventListener('click', () => {
-      const mode = tab.dataset.tab;
-      for (const other of root.querySelectorAll('[data-tab]')) {
-        const active = other === tab;
-        other.classList.toggle('is-active', active);
-        other.setAttribute('aria-selected', String(active));
-      }
-      for (const panel of root.querySelectorAll('[data-panel]')) {
-        panel.hidden = panel.dataset.panel !== mode;
-      }
-      if (mode === 'preview') renderPreview();
-    });
-  }
-
   form.addEventListener('input', schedulePreview);
 
   const idInput = form.querySelector(`[name="${idField}"]`);
   idInput?.addEventListener('input', () => {
     titlePreview.textContent = idInput.value || `Untitled ${collection.label_singular.toLowerCase()}`;
   });
+
+  renderPreview();
 
   for (const toggle of form.querySelectorAll('[data-switch]')) {
     toggle.addEventListener('click', () => {
@@ -272,6 +264,21 @@ export async function renderEditor(root, schema, collection, fileName) {
   }
 
   saveButton.addEventListener('click', async () => {
+    const missing = missingRequired();
+    if (missing.length) {
+      status.textContent = 'Fill the required fields';
+      status.classList.add('is-error');
+      for (const label of missing) {
+        const field = collection.fields.find((f) => f.label === label);
+        const input = field && form.querySelector(`[name="${field.name}"]`);
+        input?.classList.add('is-invalid');
+        input?.focus();
+      }
+      return;
+    }
+    status.classList.remove('is-error');
+    for (const el of form.querySelectorAll('.is-invalid')) el.classList.remove('is-invalid');
+
     const values = readValues();
     const markdown = form.querySelector('[name="body"]').value;
     const content = stringifyFrontmatter(values, markdown);

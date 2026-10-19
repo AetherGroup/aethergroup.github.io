@@ -109,26 +109,54 @@ export async function renderCollection(root, schema, collection) {
 
 export async function renderOverview(root, schema) {
   root.innerHTML = `
-    <div class="adm-content adm-content--wide">
-      <div class="adm-page-head">
-        <div>
-          <h1 class="adm-title">Contents</h1>
-          <p class="adm-sub">Everything published on aethergroup.github.io.</p>
-        </div>
-      </div>
-      <div class="adm-collection-grid">
+    <div class="adm-shell">
+      <aside class="adm-collections">
+        <div class="adm-collections__title">Collections</div>
         ${schema.collections
           .map(
-            (c) => `
-          <a class="adm-collection-card" href="#/collections/${c.name}">
-            <span class="adm-collection-card__label">${c.label}</span>
-            <span class="adm-collection-card__path">${c.folder}</span>
-          </a>`,
+            (c) =>
+              `<a class="adm-collection" href="#/collections/${c.name}">${c.label}</a>`,
           )
           .join('')}
+      </aside>
+
+      <div class="adm-content">
+        <div class="adm-page-head">
+          <div>
+            <h1 class="adm-title">Contents</h1>
+            <p class="adm-sub">Everything published on aethergroup.github.io.</p>
+          </div>
+        </div>
+
+        <div class="adm-collection-grid" data-collections>
+          ${schema.collections
+            .map(
+              (c) => `
+            <a class="adm-collection-card" href="#/collections/${c.name}">
+              <span class="adm-collection-card__label">${c.label}</span>
+              <span class="adm-collection-card__path">${c.folder}</span>
+              <span class="adm-collection-card__count" data-count="${c.name}">…</span>
+            </a>`,
+            )
+            .join('')}
+        </div>
       </div>
     </div>
   `;
+
+  await Promise.all(
+    schema.collections.map(async (collection) => {
+      const slot = root.querySelector(`[data-count="${collection.name}"]`);
+      if (!slot) return;
+      try {
+        const files = await listFolder(collection.folder, repoBranch());
+        const count = files.filter((f) => f.type === 'file' && f.name.endsWith('.md')).length;
+        slot.textContent = count === 1 ? '1 entry' : `${count} entries`;
+      } catch {
+        slot.textContent = '';
+      }
+    }),
+  );
 }
 
 export { entryMeta };

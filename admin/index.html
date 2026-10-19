@@ -50,9 +50,29 @@
             <svg class="icon" aria-hidden="true"><use href="#i-plus" /></svg>
             New entry
           </button>
-          <button class="adm-avatar" type="button" data-menu hidden aria-label="Account">
-            <img src="" alt="" width="28" height="28" />
-          </button>
+          <div class="adm-user">
+            <button
+              class="adm-avatar"
+              type="button"
+              data-menu-toggle
+              aria-haspopup="menu"
+              aria-expanded="false"
+              aria-label="Account"
+              hidden
+            >
+              <img src="" alt="" width="28" height="28" />
+            </button>
+            <div class="adm-menu" data-menu role="menu" hidden>
+              <div class="adm-menu__user">
+                <strong data-menu-name></strong>
+                <span data-menu-login></span>
+              </div>
+              <button class="adm-menu__item" type="button" role="menuitem" data-signout>
+                <svg class="icon" aria-hidden="true"><use href="#i-exit" /></svg>
+                Sign out
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </header>
@@ -82,8 +102,10 @@
         <symbol id="i-plus" viewBox="0 0 24 24">
           <path d="M12 5v14M5 12h14" />
         </symbol>
-        <symbol id="i-github" viewBox="0 0 24 24">
-          <path
+        <symbol id="i-exit" viewBox="0 0 24 24">
+          <path d="M14 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-2M10 12h11m0 0-3-3m3 3-3 3" />
+        </symbol>
+        <symbol id="i-github" viewBox="0 0 24 24">          <path
             fill="currentColor"
             stroke="none"
             d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2 0-.1-.5-1.6.2-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.2 3.1.2 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"

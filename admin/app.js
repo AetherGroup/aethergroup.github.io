@@ -1,4 +1,4 @@
-import { getToken, setUser } from './lib/auth-store.js';
+import { getToken, setUser, clearToken } from './lib/auth-store.js';
 import { setRepo, currentUser } from './lib/api.js';
 import { renderLogin } from './views/login.js';
 import { renderCollection, renderOverview } from './views/collection.js';
@@ -7,7 +7,7 @@ import { renderMedia, renderWorkflow } from './views/panels.js';
 
 const view = document.querySelector('[data-view]');
 const newButton = document.querySelector('[data-new]');
-const avatar = document.querySelector('[data-menu]');
+const avatar = document.querySelector('[data-menu-toggle]');
 const toasts = document.querySelector('[data-toasts]');
 
 let schema = null;
@@ -32,12 +32,47 @@ async function loadUser() {
     const user = await currentUser();
     setUser(user);
     const img = avatar.querySelector('img');
-    img.src = user.avatar_url;
+    if (img) img.src = user.avatar_url;
     avatar.title = user.login;
     avatar.hidden = false;
-  } catch {
-    location.reload();
+    document.querySelector('[data-menu-name]').textContent = user.name || user.login;
+    document.querySelector('[data-menu-login]').textContent = `@${user.login}`;
+  } catch (error) {
+    if (error.status === 401) clearToken();
+    view.innerHTML = `<div class="adm-content"><p class="adm-error">${error.message}</p></div>`;
   }
+}
+
+function setupUserMenu() {
+  const toggle = document.querySelector('[data-menu-toggle]');
+  const menu = document.querySelector('[data-menu]');
+  if (!toggle || !menu) return;
+
+  const close = () => {
+    menu.hidden = true;
+    toggle.setAttribute('aria-expanded', 'false');
+  };
+
+  toggle.addEventListener('click', (event) => {
+    event.stopPropagation();
+    const open = menu.hidden;
+    menu.hidden = !open;
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!menu.hidden && !menu.contains(event.target) && event.target !== toggle) close();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') close();
+  });
+
+  document.querySelector('[data-signout]').addEventListener('click', () => {
+    localStorage.removeItem('aetherfox-admin:token');
+    localStorage.removeItem('aetherfox-admin:user');
+    location.reload();
+  });
 }
 
 function setNav(name) {
@@ -113,14 +148,7 @@ newButton?.addEventListener('click', () => {
   if (currentCollection) location.hash = `#/collections/${currentCollection.name}/new`;
 });
 
-avatar?.addEventListener('click', () => {
-  const token = getToken();
-  if (token) {
-    localStorage.removeItem('aetherfox-admin:token');
-    localStorage.removeItem('aetherfox-admin:user');
-    location.reload();
-  }
-});
+setupUserMenu();
 
 boot().catch((error) => {
   view.innerHTML = `<div class="adm-content"><p class="adm-error">${error.message}</p></div>`;

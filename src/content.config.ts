@@ -8,7 +8,7 @@ const news = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './content/news', generateId: idFromFilename }),
   schema: z.object({
     title: z.string(),
-    description: z.string(),
+    description: z.string().default(''),
     date: z.coerce.date(),
     updated: z.coerce.date().optional(),
     author: z.string().default('Aetherfox Team'),
@@ -27,9 +27,9 @@ const changelog = defineCollection({
     version: z.string(),
     title: z.string(),
     date: z.coerce.date(),
-    type: z.enum(['major', 'minor', 'patch']),
+    type: z.enum(['major', 'minor', 'patch']).default('minor'),
     platforms: z.array(z.enum(['windows', 'linux', 'macos'])).default([]),
-    summary: z.string(),
+    summary: z.string().default(''),
     draft: z.boolean().default(false),
   }),
 });
@@ -38,7 +38,7 @@ const pages = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './content/pages', generateId: idFromFilename }),
   schema: z.object({
     title: z.string(),
-    description: z.string(),
+    description: z.string().default(''),
     date: z.coerce.date(),
     template: z.enum(['default', 'wide']).default('default'),
     order: z.number().default(0),
