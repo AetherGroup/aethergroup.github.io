@@ -10,7 +10,7 @@ const SOURCES = ['assets', 'admin'];
 const ROOT_FILES = ['.nojekyll', 'robots.txt'];
 
 /** Ficheros de desarrollo que no se publican. */
-const EXCLUDE = new Set(['dev.html', 'config.test.yml']);
+const EXCLUDE = new Set([]);
 
 async function copyDir(from, to) {
   await cp(from, to, {

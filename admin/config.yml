@@ -7,9 +7,6 @@ backend:
     create: 'cms: create {{collection}} «{{slug}}»'
     update: 'cms: update {{collection}} «{{slug}}»'
     delete: 'cms: delete {{collection}} «{{slug}}»'
-  base_url: https://aetherfox-cms-auth.aetherfox-cms-auth.workers.dev
-  auth_endpoint: api/auth
-  site_domain: https://aethergroup.github.io
 
 base_url: /
 
@@ -20,79 +17,62 @@ local_backend: true
 publish_mode: editorial_workflow
 
 collections:
-  - name: news
-    label: News
-    label_singular: Post
-    folder: content/news
+  - name: 'news'
+    label: 'News'
+    label_singular: 'Post'
+    folder: 'content/news'
     create: true
+    identifier_field: 'title'
     slug: '{{slug}}'
     extension: md
     format: frontmatter
     summary: '{{title}} — {{date}}'
     fields:
-      - { label: Title, name: title, widget: string }
-      - { label: Description, name: description, widget: text }
-      - { label: Published on, name: date, widget: datetime }
-      - { label: Updated on, name: updated, widget: datetime, required: false }
-      - { label: Author, name: author, widget: string, default: Aetherfox Team }
-      - label: Category
-        name: category
-        widget: select
-        options: [Release, Privacy, Design, Engineering]
-        default: Release
-      - { label: Tags, name: tags, widget: list, required: false, default: [] }
-      - { label: Cover, name: cover, widget: image, required: false }
-      - { label: Cover alt text, name: coverAlt, widget: string, required: false }
-      - { label: Featured, name: featured, widget: boolean, default: false }
-      - { label: Draft, name: draft, widget: boolean, default: false }
+      - { label: 'Title', name: 'title', widget: 'string' }
+      - { label: 'Description', name: 'description', widget: 'text' }
+      - { label: 'Published on', name: 'date', widget: 'datetime' }
+      - { label: 'Updated on', name: 'updated', widget: 'datetime', required: false }
+      - { label: 'Author', name: 'author', widget: 'string', default: 'Aetherfox Team' }
+      - { label: 'Category', name: 'category', widget: 'select', default: 'Release', options: ['Release', 'Privacy', 'Design', 'Engineering'] }
+      - { label: 'Tags', name: 'tags', widget: 'list', required: false, default: [] }
+      - { label: 'Cover', name: 'cover', widget: 'image', required: false }
+      - { label: 'Cover alt text', name: 'coverAlt', widget: 'string', required: false }
+      - { label: 'Featured', name: 'featured', widget: 'boolean', default: 'false' }
+      - { label: 'Draft', name: 'draft', widget: 'boolean', default: 'false' }
     body: body
-
-  - name: changelog
-    label: Changelog
-    label_singular: Release
-    folder: content/changelog
+  - name: 'changelog'
+    label: 'Changelog'
+    label_singular: 'Release'
+    folder: 'content/changelog'
     create: true
-    identifier_field: version
+    identifier_field: 'version'
     slug: '{{slug}}'
     extension: md
     format: frontmatter
     summary: '{{version}} — {{title}}'
     fields:
-      - { label: Version, name: version, widget: string, hint: 'Semantic version, e.g. 1.2.0. It becomes the URL.' }
-      - { label: Title, name: title, widget: string }
-      - { label: Released on, name: date, widget: datetime }
-      - label: Type
-        name: type
-        widget: select
-        options: [major, minor, patch]
-        default: minor
-      - label: Platforms
-        name: platforms
-        widget: list
-        options: [windows, linux, macos]
-        required: false
-        default: [windows, linux]
-      - { label: Summary, name: summary, widget: text }
-      - { label: Draft, name: draft, widget: boolean, default: false }
+      - { label: 'Version', name: 'version', widget: 'string' }
+      - { label: 'Title', name: 'title', widget: 'string' }
+      - { label: 'Released on', name: 'date', widget: 'datetime' }
+      - { label: 'Type', name: 'type', widget: 'select', default: 'minor', options: ['major', 'minor', 'patch'] }
+      - { label: 'Platforms', name: 'platforms', widget: 'list', required: false, default: ['windows', 'linux'], options: ['windows', 'linux', 'macos'] }
+      - { label: 'Summary', name: 'summary', widget: 'text' }
+      - { label: 'Draft', name: 'draft', widget: 'boolean', default: 'false' }
     body: body
-
-  - name: pages
-    label: Static pages
-    label_singular: Page
-    folder: content/pages
+  - name: 'pages'
+    label: 'Static pages'
+    label_singular: 'Page'
+    folder: 'content/pages'
     create: true
+    identifier_field: 'title'
     slug: '{{slug}}'
     extension: md
     format: frontmatter
     fields:
-      - { label: Title, name: title, widget: string }
-      - { label: Description, name: description, widget: text }
-      - { label: Date, name: date, widget: datetime }
-      - label: Template
-        name: template
-        widget: select
-        options: [default, wide]
-        default: default
-      - { label: Order, name: order, widget: number, default: 0, min: 0 }
-      - { label: Draft, name: draft, widget: boolean, default: false }
+      - { label: 'Title', name: 'title', widget: 'string' }
+      - { label: 'Description', name: 'description', widget: 'text' }
+      - { label: 'Date', name: 'date', widget: 'datetime' }
+      - { label: 'Template', name: 'template', widget: 'select', default: 'default', options: ['default', 'wide'] }
+      - { label: 'Order', name: 'order', widget: 'number', default: '0', min: 0 }
+      - { label: 'Draft', name: 'draft', widget: 'boolean', default: 'false' }
     body: body

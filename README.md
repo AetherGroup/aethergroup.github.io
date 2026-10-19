@@ -89,35 +89,49 @@ When the browser theme changes, the same values have to be updated there.
 
 ## The admin
 
-`/admin` is a Decap CMS instance, restyled to look like the public site
-rather than a tinted version of Decap's own layout.
+`/admin` is a **CMS built for this site**, not a reskinned third party. It has
+the same structure as the public site: a header with the brand, a sidebar of
+collections, entries as cards, and a single column editor that reads like a
+page rather than a form in a panel.
 
-- `admin/index.html` — the shell: fonts, theme bootstrap, the brand block
-- `admin/admin.css` — the whole theme
-- `admin/config.yml` — collections, backend, media
+| File | What it does |
+|---|---|
+| `admin/index.html` | The shell: header, main area, icon sprite |
+| `admin/admin.css` | The design, on the site's own tokens |
+| `admin/app.js` | Boot, router, navigation |
+| `admin/lib/api.js` | GitHub API: read, list, commit |
+| `admin/lib/auth-store.js` | Where the token lives |
+| `admin/lib/markdown.js` | Frontmatter parsing and writing |
+| `admin/schema.json` | **The single source of truth** for collections and fields |
+| `admin/views/*.js` | Login, collection list, editor, media and workflow panels |
 
-Decap compiles its styles with Emotion, which injects them at runtime and
-wins on order. The overrides therefore target the label embedded in each
-generated class name (`[class*="LoginButton"]`, `[class*="SidebarContainer"]`,
-`[class*="CollectionTopRow"]`…) and use `!important`. Those labels are stable
-between Decap versions, but check them after upgrading Decap:
+### How it saves
 
-```bash
-node scripts/check-admin-selectors.mjs
+Every change is a commit. The editor writes the Markdown file through the
+GitHub API, which triggers the deploy. There is no database and no server.
+
+```
+admin/schema.json  →  scripts/generate-admin-config.mjs  →  admin/config.yml
 ```
 
-**Bump the version** in `admin/index.html` when you change `admin.css`, or
-browsers will keep the cached copy for up to ten minutes:
+`schema.json` is the source of truth. `config.yml` is generated from it, so the
+two can never drift apart.
 
-```html
-<link rel="stylesheet" href="/admin/admin.css?v=1.0.0" />
-```
+### Authentication
 
-### Local development
+The Cloudflare Worker in `oauth-worker/` performs the GitHub OAuth handshake and
+posts the token back to the admin window. The admin only needs the worker URL
+and the token it receives.
 
-`admin/dev.html` loads `admin/config.test.yml`, which uses the same
-collections against a local backend, so the interface can be worked on without
-touching the repository. It is excluded from the published site.
+### The CMS it replaces
+
+The admin was first built on Decap CMS. Decap is a React application with its
+own layout, and CSS can only recolour it, not restructure it: the editor kept
+its two column layout with a preview pane, and the fields were a different
+component tree entirely. The admin is now written from scratch so the
+structure matches the site.
+
+Decap's `config.yml` is still generated, so it can be brought back if needed.
 
 ## Architecture
 

@@ -1,0 +1,85 @@
+{
+  "repo": "AetherGroup/aethergroup.github.io",
+  "branch": "main",
+  "base_url": "https://aethergroup.github.io",
+  "collections": [
+    {
+      "name": "news",
+      "label": "News",
+      "label_singular": "Post",
+      "folder": "content/news",
+      "identifier_field": "title",
+      "summary": "{{title}} — {{date}}",
+      "fields": [
+        { "label": "Title", "name": "title", "widget": "string" },
+        { "label": "Description", "name": "description", "widget": "text" },
+        { "label": "Published on", "name": "date", "widget": "datetime" },
+        { "label": "Updated on", "name": "updated", "widget": "datetime", "required": false },
+        { "label": "Author", "name": "author", "widget": "string", "default": "Aetherfox Team" },
+        {
+          "label": "Category",
+          "name": "category",
+          "widget": "select",
+          "options": ["Release", "Privacy", "Design", "Engineering"],
+          "default": "Release"
+        },
+        { "label": "Tags", "name": "tags", "widget": "list", "required": false, "default": [] },
+        { "label": "Cover", "name": "cover", "widget": "image", "required": false },
+        { "label": "Cover alt text", "name": "coverAlt", "widget": "string", "required": false },
+        { "label": "Featured", "name": "featured", "widget": "boolean", "default": false },
+        { "label": "Draft", "name": "draft", "widget": "boolean", "default": false }
+      ]
+    },
+    {
+      "name": "changelog",
+      "label": "Changelog",
+      "label_singular": "Release",
+      "folder": "content/changelog",
+      "identifier_field": "version",
+      "summary": "{{version}} — {{title}}",
+      "fields": [
+        { "label": "Version", "name": "version", "widget": "string" },
+        { "label": "Title", "name": "title", "widget": "string" },
+        { "label": "Released on", "name": "date", "widget": "datetime" },
+        {
+          "label": "Type",
+          "name": "type",
+          "widget": "select",
+          "options": ["major", "minor", "patch"],
+          "default": "minor"
+        },
+        {
+          "label": "Platforms",
+          "name": "platforms",
+          "widget": "list",
+          "options": ["windows", "linux", "macos"],
+          "required": false,
+          "default": ["windows", "linux"]
+        },
+        { "label": "Summary", "name": "summary", "widget": "text" },
+        { "label": "Draft", "name": "draft", "widget": "boolean", "default": false }
+      ]
+    },
+    {
+      "name": "pages",
+      "label": "Static pages",
+      "label_singular": "Page",
+      "folder": "content/pages",
+      "identifier_field": "title",
+      "fields": [
+        { "label": "Title", "name": "title", "widget": "string" },
+        { "label": "Description", "name": "description", "widget": "text" },
+        { "label": "Date", "name": "date", "widget": "datetime" },
+        {
+          "label": "Template",
+          "name": "template",
+          "widget": "select",
+          "options": ["default", "wide"],
+          "default": "default"
+        },
+        { "label": "Order", "name": "order", "widget": "number", "default": 0, "min": 0 },
+        { "label": "Draft", "name": "draft", "widget": "boolean", "default": false }
+      ]
+    }
+  ]
+}

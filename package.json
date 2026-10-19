@@ -6,7 +6,7 @@
   "description": "Sitio web de Aetherfox — https://aethergroup.github.io/",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/copy-static.mjs",
+    "build": "astro build && node scripts/generate-admin-config.mjs && node scripts/copy-static.mjs",
     "preview": "astro preview",
     "check": "astro check",
     "astro": "astro",
