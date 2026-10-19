@@ -1,0 +1,19 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { withBase } from '../lib/url';
+---
+
+<PageLayout title="Page not found" description="That page does not exist." canonicalPath="/" noindex>
+  <section class="section">
+    <div class="wrap page-404">
+      <div>
+        <h1 class="display">Page not found.</h1>
+        <p>That address does not exist. Nothing was sent anywhere while you looked for it.</p>
+        <div class="cluster" style="justify-content: center">
+          <a class="btn" href={withBase('/')}>Back home</a>
+          <a class="btn btn--secondary" href={withBase('/news')}>News</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</PageLayout>

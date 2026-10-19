@@ -1,0 +1,14 @@
+---
+import { type IconName } from '../../data/icons';
+
+type Props = {
+  name: IconName;
+  size?: 'sm' | 'xs';
+  class?: string;
+};
+
+const { name, size, class: className = '' } = Astro.props;
+const classes = ['icon', size ? `icon--${size}` : '', className].filter(Boolean).join(' ');
+---
+
+<svg class={classes} aria-hidden="true" focusable="false"><use href={`#i-${name}`} /></svg>

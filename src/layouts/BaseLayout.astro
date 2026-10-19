@@ -1,0 +1,117 @@
+---
+import IconSprite from '../components/ui/IconSprite.astro';
+import { site } from '../data/site';
+import { canonical, withBase } from '../lib/url';
+
+type Props = {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  publishedTime?: string;
+  canonicalPath?: string;
+  noindex?: boolean;
+};
+
+const {
+  title,
+  description = site.description,
+  image = '/assets/images/social/og-default.png',
+  type = 'website',
+  publishedTime,
+  canonicalPath,
+  noindex = false,
+} = Astro.props;
+
+const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`;
+const url = canonical(canonicalPath ?? Astro.url.pathname);
+const imageUrl = new URL(withBase(image), Astro.site).href;
+const v = site.assetVersion;
+
+const css = [
+  '00-tokens',
+  '01-fonts',
+  '02-reset',
+  '03-base',
+  '04-layout',
+  '05-components',
+  '06-pages',
+  '07-utilities',
+];
+---
+
+<!doctype html>
+<html lang={site.lang} data-theme="aetherlight">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={url} />
+    {noindex && <meta name="robots" content="noindex" />}
+
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title ?? site.name} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={url} />
+    <meta property="og:image" content={imageUrl} />
+    {publishedTime && <meta property="article:published_time" content={publishedTime} />}
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title ?? site.name} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
+
+    <meta name="theme-color" content="#D8D0F6" />
+    <link rel="icon" type="image/png" sizes="32x32" href={withBase('/assets/images/icons/favicon-32.png')} />
+    <link rel="icon" type="image/png" sizes="16x16" href={withBase('/assets/images/icons/favicon-16.png')} />
+    <link rel="apple-touch-icon" href={withBase('/assets/images/icons/apple-touch-icon.png')} />
+    <link rel="manifest" href={withBase('/site.webmanifest')} />
+    <link rel="alternate" type="application/rss+xml" title={site.name} href={withBase('/rss.xml')} />
+
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href={withBase('/assets/fonts/bricolage-grotesque-800-latin.woff2')}
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href={withBase('/assets/fonts/plus-jakarta-sans-500-latin.woff2')}
+      crossorigin
+    />
+
+    {
+      css.map((name) => (
+        <link rel="stylesheet" href={withBase(`/assets/css/${name}.css?v=${v}`)} />
+      ))
+    }
+
+    <script is:inline>
+      (() => {
+        try {
+          const stored = localStorage.getItem('aetherfox:theme');
+          const pref = stored ? JSON.parse(stored) : 'auto';
+          const system = matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'aetherdark'
+            : 'aetherlight';
+          document.documentElement.dataset.theme =
+            !pref || pref === 'auto' ? system : pref;
+        } catch {
+          document.documentElement.dataset.theme = 'aetherlight';
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <IconSprite />
+    <slot />
+    <script type="module" src={withBase('/assets/js/main.js')}></script>
+  </body>
+</html>

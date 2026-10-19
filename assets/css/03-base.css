@@ -1,0 +1,141 @@
+@layer base {
+  body {
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    font-weight: 500;
+    line-height: var(--lh-body);
+    color: var(--c-text);
+    background: var(--c-bg-image, var(--c-bg));
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    line-height: var(--lh-heading);
+    letter-spacing: var(--ls-display);
+    color: var(--c-text-strong);
+    text-wrap: balance;
+  }
+
+  h1 {
+    font-size: var(--fs-display-1);
+    line-height: var(--lh-tight);
+  }
+
+  h2 {
+    font-size: var(--fs-display-2);
+  }
+
+  h3 {
+    font-size: var(--fs-h3);
+  }
+
+  h4 {
+    font-size: var(--fs-body);
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  strong,
+  b {
+    font-weight: 700;
+    color: var(--c-text-strong);
+  }
+
+  
+
+  a {
+    color: var(--c-accent);
+    transition: color var(--dur-fast) var(--ease);
+  }
+
+  a:hover {
+    color: var(--c-accent-2);
+  }
+
+  
+
+  code,
+  kbd,
+  samp,
+  pre {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+
+  code {
+    padding: 0.15em 0.4em;
+    border-radius: var(--r-xs);
+    background: var(--c-surface-2);
+  }
+
+  pre {
+    padding: var(--sp-5);
+    border-radius: var(--r-md);
+    background: var(--c-surface-2);
+    overflow-x: auto;
+  }
+
+  pre code {
+    padding: 0;
+    background: none;
+  }
+
+  blockquote {
+    padding-inline-start: var(--sp-5);
+    border-inline-start: 3px solid var(--c-accent);
+    color: var(--c-text-muted);
+  }
+
+  
+
+  input,
+  textarea,
+  select {
+    padding: var(--sp-3) var(--sp-4);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-md);
+    background: var(--c-surface);
+  }
+
+  
+
+  .display {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: var(--ls-display);
+    color: var(--c-text-strong);
+  }
+
+  .lead {
+    font-size: var(--fs-lead);
+    color: var(--c-text-muted);
+  }
+
+  .muted {
+    color: var(--c-text-muted);
+  }
+
+  .eyebrow {
+    font-size: var(--fs-badge);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--c-accent);
+  }
+
+  .fine {
+    font-size: var(--fs-xs);
+    color: var(--c-text-muted);
+  }
+}

@@ -1,0 +1,46 @@
+---
+import { navigation } from '../../data/site';
+import { withBase } from '../../lib/url';
+import Icon from '../ui/Icon.astro';
+
+const current = Astro.url.pathname;
+const isActive = (href: string) => {
+  const path = href.split('#')[0];
+  return path !== '/' && current.startsWith(path);
+};
+---
+
+<header class="site-header">
+  <div class="wrap site-nav" data-nav>
+    <a class="site-brand" href={withBase('/')}>
+      <img src={withBase('/assets/images/brand/aetherfox-logo.webp')} alt="" width="34" height="34" />
+      Aetherfox
+    </a>
+
+    <nav class="site-nav__links" data-nav-links aria-label="Main">
+      {
+        navigation.map((item) => (
+          <a href={withBase(item.href)} aria-current={isActive(item.href) ? 'page' : undefined}>
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="site-nav__actions">
+      <a class="btn" href={withBase('/download')}>
+        <Icon name="dl" />
+        Download
+      </a>
+      <button
+        class="site-nav__toggle"
+        type="button"
+        data-nav-toggle
+        aria-expanded="false"
+        aria-label="Open menu"
+      >
+        <Icon name="mn" />
+      </button>
+    </div>
+  </div>
+</header>

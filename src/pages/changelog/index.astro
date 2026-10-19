@@ -1,0 +1,44 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+import { withBase } from '../../lib/url';
+
+const entries = (await getCollection('changelog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+
+const format = (date: Date) =>
+  new Intl.DateTimeFormat('en', { year: 'numeric', month: 'long', day: 'numeric' }).format(date);
+---
+
+<PageLayout title="Changelog" description="Every Aetherfox release, with what was added, changed and removed.">
+  <section class="section">
+    <div class="wrap">
+      <div class="page-list__head">
+        <h1 class="display">Changelog</h1>
+        <p>Every release, with what was added, changed and removed.</p>
+      </div>
+
+      {
+        entries.map((entry) => (
+          <div class="changelog__group">
+            <div class="changelog__entry">
+              <div class="changelog__version">
+                <span class:list={['badge', `badge--${entry.data.type}`]}>{entry.data.version}</span>
+                <time class="changelog__date" datetime={entry.data.date.toISOString()}>
+                  {format(entry.data.date)}
+                </time>
+              </div>
+              <div>
+                <h2>
+                  <a href={withBase(`/changelog/${entry.data.version}`)}>{entry.data.title}</a>
+                </h2>
+                <p class="lead u-mt-3">{entry.data.summary}</p>
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+</PageLayout>

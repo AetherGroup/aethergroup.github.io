@@ -1,0 +1,88 @@
+---
+import { fingerprinting, leftOut } from '../../data/features';
+import Icon from '../ui/Icon.astro';
+import { withBase } from '../../lib/url';
+---
+
+<section class="section" id="privacy">
+  <div class="wrap page-home__privacy">
+    <div class="section-head" style="margin: 0">
+      <h2 class="display">Sites read more about you than you think.</h2>
+      <p>
+        Fingerprinting recognizes you from small details of your browser, no cookies needed.
+        Aetherfox changes what each site reads, so the picture never adds up.
+      </p>
+    </div>
+
+    <div class="feature-list">
+      {
+        fingerprinting.map((item) => (
+          <div class="feature-row">
+            <span class="icon-box">
+              <Icon name={item.icon} />
+            </span>
+            <div class="feature-row__body">
+              <b>{item.title}</b>
+              <small>{item.description}</small>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<section class="section" id="left-out">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 class="display">What we left out.</h2>
+      <p>Less running in the background, less in your way.</p>
+    </div>
+
+    <div class="bento">
+      {
+        leftOut.map((item) => (
+          <div class="bento__card">
+            <span class="icon-box">
+              <Icon name={item.icon} />
+            </span>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+            <div class="bento__foot">
+              <div class="chip-row">
+                {item.removed.map((chip) => (
+                  <span class="chip chip--removed">{chip}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<section class="section" id="download">
+  <div class="wrap">
+    <div class="download-panel">
+      <div>
+        <h2 class="display">Get Aetherfox.</h2>
+        <p>Free for Windows and Linux. Import your bookmarks and passwords in a minute.</p>
+        <div class="cluster">
+          <a class="btn btn--inverse" href={withBase('/download')}>
+            <Icon name="dl" />
+            Download for Windows
+          </a>
+          <a class="btn btn--inverse-secondary" href={withBase('/download')}>Linux</a>
+        </div>
+      </div>
+      <img
+        src={withBase('/assets/images/brand/aetherfox-logo.webp')}
+        alt=""
+        width="240"
+        height="224"
+        loading="lazy"
+      />
+    </div>
+  </div>
+</section>

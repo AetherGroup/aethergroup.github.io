@@ -1,0 +1,30 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import BrowserMock from '../components/marketing/BrowserMock.astro';
+import HomeSections from '../components/marketing/HomeSections.astro';
+import Icon from '../components/ui/Icon.astro';
+import { withBase } from '../lib/url';
+---
+
+<PageLayout>
+  <div class="wrap page-home__hero">
+    <div>
+      <h1 class="display">The browser with the extras left out.</h1>
+      <p class="lead">
+        No telemetry, no sync, no clutter. Aetherfox also keeps websites from measuring you.
+      </p>
+      <div class="page-home__cta">
+        <a class="btn" href={withBase('/download')}>
+          <Icon name="dl" />
+          Download for Windows
+        </a>
+        <a class="btn btn--secondary" href={withBase('/download')}>Other platforms</a>
+      </div>
+      <p class="page-home__fine">Free. Windows and Linux.</p>
+    </div>
+
+    <BrowserMock />
+  </div>
+
+  <HomeSections />
+</PageLayout>

@@ -1,0 +1,69 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { platforms } from '../data/features';
+import Icon from '../components/ui/Icon.astro';
+import { site } from '../data/site';
+---
+
+<PageLayout title="Download" description="Get Aetherfox for Windows or Linux. Free, and it stays free.">
+  <section class="section">
+    <div class="wrap">
+      <div class="page-list__head">
+        <h1 class="display">Get Aetherfox.</h1>
+        <p>Free for Windows and Linux. Import your bookmarks and passwords in a minute.</p>
+      </div>
+
+      <div class="grid grid--2">
+        {
+          platforms.map((platform) => (
+            <div class="bento__card">
+              <span class="icon-box">
+                <Icon name="dl" />
+              </span>
+              <h3>Aetherfox for {platform.label}</h3>
+              <p>
+                The import happens on your machine. Nothing is uploaded, and there is no account to
+                create.
+              </p>
+              <div class="bento__foot">
+                <a class="btn" href={site.browserRepo} rel="noopener noreferrer" target="_blank">
+                  <Icon name="dl" />
+                  Download for {platform.label}
+                </a>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="u-flow-lg u-mt-9">
+        <div class="section-head">
+          <h2 class="display">What you get</h2>
+        </div>
+        <ul class="feature-list">
+          <li class="feature-row">
+            <span class="icon-box"><Icon name="ban" /></span>
+            <div class="feature-row__body">
+              <b>No telemetry, and nothing to opt out of</b>
+              <small>Aetherfox sends nothing back about you.</small>
+            </div>
+          </li>
+          <li class="feature-row">
+            <span class="icon-box"><Icon name="cloud" /></span>
+            <div class="feature-row__body">
+              <b>No account, no sync</b>
+              <small>Bookmarks and passwords stay on the device they were created on.</small>
+            </div>
+          </li>
+          <li class="feature-row">
+            <span class="icon-box"><Icon name="shield" /></span>
+            <div class="feature-row__body">
+              <b>Fingerprinting resistance</b>
+              <small>Each site reads slightly different values, so the picture never adds up.</small>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</PageLayout>

@@ -1,0 +1,54 @@
+---
+import { getCollection, render } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+import { withBase } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('changelog', ({ data }) => !data.draft);
+  return entries.map((entry) => ({
+    params: { slug: entry.data.version },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const format = (date: Date) =>
+  new Intl.DateTimeFormat('en', { year: 'numeric', month: 'long', day: 'numeric' }).format(date);
+---
+
+<PageLayout title={`${entry.data.version} — ${entry.data.title}`} description={entry.data.summary}>
+  <section class="section">
+    <div class="wrap page-article__layout">
+      <article>
+        <div class="page-article__head">
+          <a class="eyebrow" href={withBase('/changelog')}>Changelog</a>
+          <h1 class="display">
+            <span class:list={['badge', `badge--${entry.data.type}`]}>{entry.data.version}</span>
+            {entry.data.title}
+          </h1>
+          <div class="page-article__meta">
+            <time datetime={entry.data.date.toISOString()}>{format(entry.data.date)}</time>
+            {
+              entry.data.platforms.length > 0 && (
+                <>
+                  <span>·</span>
+                  <span>{entry.data.platforms.join(', ')}</span>
+                </>
+              )
+            }
+          </div>
+        </div>
+
+        <div class="prose">
+          <Content />
+        </div>
+      </article>
+
+      <aside class="page-article__aside">
+        <a class="btn btn--secondary" href={withBase('/changelog')}>All releases</a>
+      </aside>
+    </div>
+  </section>
+</PageLayout>

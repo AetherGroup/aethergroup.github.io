@@ -1,0 +1,26 @@
+{
+  "name": "aetherfox-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Sitio web de Aetherfox — https://aethergroup.github.io/",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node scripts/copy-static.mjs",
+    "preview": "astro preview",
+    "check": "astro check",
+    "astro": "astro",
+    "check:links": "node scripts/check-links.mjs",
+    "icons": "node scripts/generate-icons.mjs",
+    "fonts": "node scripts/fetch-fonts.mjs"
+  },
+  "dependencies": {
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.4.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.11",
+    "typescript": "^5.9.3"
+  }
+}

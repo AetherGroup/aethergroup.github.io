@@ -1,0 +1,91 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { fingerprinting, leftOut, platforms } from '../data/features';
+import Icon from '../components/ui/Icon.astro';
+---
+
+<PageLayout title="Features" description="What Aetherfox does, and what it deliberately does not.">
+  <section class="section">
+    <div class="wrap">
+      <div class="page-list__head">
+        <h1 class="display">Features</h1>
+        <p>A browser that does the ordinary things well and leaves the rest out.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--flush-top">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="display">Fingerprinting resistance</h2>
+        <p>Each site reads slightly different values, so the picture never adds up.</p>
+      </div>
+
+      <div class="feature-list">
+        {
+          fingerprinting.map((item) => (
+            <div class="feature-row">
+              <span class="icon-box">
+                <Icon name={item.icon} />
+              </span>
+              <div class="feature-row__body">
+                <b>{item.title}</b>
+                <small>{item.description}</small>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="display">What we left out</h2>
+        <p>Less running in the background, less in your way.</p>
+      </div>
+
+      <div class="bento">
+        {
+          leftOut.map((item) => (
+            <div class="bento__card">
+              <span class="icon-box">
+                <Icon name={item.icon} />
+              </span>
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
+              <div class="bento__foot">
+                <div class="chip-row">
+                  {item.removed.map((chip) => (
+                    <span class="chip chip--removed">{chip}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="display">Platforms</h2>
+        <p>Free, and built on the same engine you already trust.</p>
+      </div>
+
+      <div class="grid grid--2">
+        {
+          platforms.map((platform) => (
+            <div class="bento__card">
+              <h3>{platform.label}</h3>
+              <p>Import your bookmarks and passwords in a minute. Everything stays local.</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</PageLayout>
