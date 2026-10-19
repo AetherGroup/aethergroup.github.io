@@ -37,3 +37,6 @@ Thumbs.db
 
 # tipos generados
 src/env.d.ts
+
+# reference material
+reference/
