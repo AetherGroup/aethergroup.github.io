@@ -12,7 +12,8 @@
     "astro": "astro",
     "check:links": "node scripts/check-links.mjs",
     "icons": "node scripts/generate-icons.mjs",
-    "fonts": "node scripts/fetch-fonts.mjs"
+    "fonts": "node scripts/fetch-fonts.mjs",
+    "check:admin": "node scripts/check-admin-selectors.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",

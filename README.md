@@ -87,6 +87,38 @@ browser repository, so the site and the product stay in sync:
 `assets/css/00-tokens.css` mirrors those values in the site's own token names.
 When the browser theme changes, the same values have to be updated there.
 
+## The admin
+
+`/admin` is a Decap CMS instance, restyled to look like the public site
+rather than a tinted version of Decap's own layout.
+
+- `admin/index.html` — the shell: fonts, theme bootstrap, the brand block
+- `admin/admin.css` — the whole theme
+- `admin/config.yml` — collections, backend, media
+
+Decap compiles its styles with Emotion, which injects them at runtime and
+wins on order. The overrides therefore target the label embedded in each
+generated class name (`[class*="LoginButton"]`, `[class*="SidebarContainer"]`,
+`[class*="CollectionTopRow"]`…) and use `!important`. Those labels are stable
+between Decap versions, but check them after upgrading Decap:
+
+```bash
+node scripts/check-admin-selectors.mjs
+```
+
+**Bump the version** in `admin/index.html` when you change `admin.css`, or
+browsers will keep the cached copy for up to ten minutes:
+
+```html
+<link rel="stylesheet" href="/admin/admin.css?v=1.0.0" />
+```
+
+### Local development
+
+`admin/dev.html` loads `admin/config.test.yml`, which uses the same
+collections against a local backend, so the interface can be worked on without
+touching the repository. It is excluded from the published site.
+
 ## Architecture
 
 See `ARCHITECTURE.md` for the full rationale: folder structure, CSS and JS
