@@ -7,7 +7,7 @@ backend:
     create: 'cms: create {{collection}} «{{slug}}»'
     update: 'cms: update {{collection}} «{{slug}}»'
     delete: 'cms: delete {{collection}} «{{slug}}»'
-  base_url: https://aetherfox-cms-auth.REPLACE_SUBDOMAIN.workers.dev
+  base_url: https://aetherfox-cms-auth.aetherfox-cms-auth.workers.dev
   auth_endpoint: api/auth
   site_domain: https://aethergroup.github.io
 

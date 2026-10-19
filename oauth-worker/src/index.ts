@@ -105,9 +105,18 @@ const handleCallback = async (request: Request, url: URL, env: Env) => {
   });
 };
 
+const REQUIRED = ['GITHUB_CLIENT_ID', 'GITHUB_CLIENT_SECRET', 'CMS_ORIGIN', 'STATE_SECRET'] as const;
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+
+    const missing = REQUIRED.filter((name) => !env[name]);
+    if (missing.length) {
+      return new Response(`Worker not configured. Missing secrets: ${missing.join(', ')}`, {
+        status: 503,
+      });
+    }
 
     if (url.pathname === '/api/auth') return handleAuth(url, env);
     if (url.pathname === '/api/callback') return handleCallback(request, url, env);
