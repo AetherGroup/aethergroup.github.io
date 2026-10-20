@@ -3,7 +3,10 @@ import PageLayout from '../layouts/PageLayout.astro';
 import BrowserMock from '../components/marketing/BrowserMock.astro';
 import HomeSections from '../components/marketing/HomeSections.astro';
 import Icon from '../components/ui/Icon.astro';
+import { installer, release } from '../lib/releases';
 import { withBase } from '../lib/url';
+
+const version = release.tag ? release.tag.replace(/^v/, '') : null;
 ---
 
 <PageLayout>
@@ -14,13 +17,16 @@ import { withBase } from '../lib/url';
         No telemetry, no sync, no clutter. Aetherfox also keeps websites from measuring you.
       </p>
       <div class="page-home__cta">
-        <a class="btn" href={withBase('/download')}>
+        <a class="btn" href={installer?.url ?? release.page} download>
           <Icon name="dl" />
           Download for Windows
         </a>
         <a class="btn btn--secondary" href={withBase('/download')}>Other platforms</a>
       </div>
-      <p class="page-home__fine">Free. Windows and Linux.</p>
+      <p class="page-home__fine">
+        Free. Windows and Linux.
+        {version && ` Currently ${version}.`}
+      </p>
     </div>
 
     <BrowserMock />

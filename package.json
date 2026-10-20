@@ -14,7 +14,7 @@
     "icons": "node scripts/generate-icons.mjs",
     "fonts": "node scripts/fetch-fonts.mjs",
     "check:admin": "node scripts/check-admin-selectors.mjs",
-    "prebuild": "node scripts/check-schema.mjs",
+    "prebuild": "node scripts/check-schema.mjs && node scripts/fetch-release.mjs && node scripts/generate-admin-icons.mjs",
     "check:schema": "node scripts/check-schema.mjs"
   },
   "dependencies": {

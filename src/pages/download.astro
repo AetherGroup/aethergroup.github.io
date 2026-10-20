@@ -1,68 +1,102 @@
 ---
 import PageLayout from '../layouts/PageLayout.astro';
-import { platforms } from '../data/features';
 import Icon from '../components/ui/Icon.astro';
-import { site } from '../data/site';
+import DownloadSplit from '../components/marketing/DownloadSplit.astro';
+import { formatReleaseDate, formatSize, installer, portable, release } from '../lib/releases';
+import { withBase } from '../lib/url';
+
+const version = release.tag ? release.tag.replace(/^v/, '') : null;
+const published = formatReleaseDate(release.publishedAt);
 ---
 
-<PageLayout title="Download" description="Get Aetherfox for Windows or Linux. Free, and it stays free.">
+<PageLayout title="Download" description="Get Aetherfox for Windows. Free, and it stays free.">
   <section class="section">
     <div class="wrap">
       <div class="page-list__head">
+        <p class="eyebrow">Download</p>
         <h1 class="display">Get Aetherfox.</h1>
-        <p>Free for Windows and Linux. Import your bookmarks and passwords in a minute.</p>
+        <p>
+          Free for Windows and Linux. Import your bookmarks and passwords in a minute — it all happens
+          on your machine.
+        </p>
       </div>
 
-      <div class="grid grid--2">
-        {
-          platforms.map((platform) => (
-            <div class="bento__card">
-              <span class="icon-box">
-                <Icon name="dl" />
-              </span>
-              <h3>Aetherfox for {platform.label}</h3>
-              <p>
-                The import happens on your machine. Nothing is uploaded, and there is no account to
-                create.
+      <div class="dl-panel">
+        <div>
+          {
+            version && (
+              <p class="dl-panel__version">
+                Version {version}
+                {published && ` · released ${published}`}
               </p>
-              <div class="bento__foot">
-                <a class="btn" href={site.browserRepo} rel="noopener noreferrer" target="_blank">
-                  <Icon name="dl" />
-                  Download for {platform.label}
-                </a>
-              </div>
-            </div>
-          ))
-        }
+            )
+          }
+          <h2 class="display">Aetherfox for Windows</h2>
+          <p class="dl-panel__text">
+            The installer sets Aetherfox up and adds it to your Start menu. The portable version is a
+            single folder you can run from anywhere, without installing anything.
+          </p>
+
+          <DownloadSplit
+            installerUrl={installer?.url ?? release.page}
+            portableUrl={portable?.url ?? release.page}
+            version={version}
+            installerSize={installer?.size ?? 0}
+            portableSize={portable?.size ?? 0}
+          />
+
+          <ul class="dl-panel__list">
+            <li>
+              <span class="icon-box"><Icon name="ban" size="sm" /></span>
+              No telemetry, no account, no cloud profile
+            </li>
+            <li>
+              <span class="icon-box"><Icon name="shield" size="sm" /></span>
+              Fingerprinting resistance on by default
+            </li>
+            <li>
+              <span class="icon-box"><Icon name="cloud" size="sm" /></span>
+              Your bookmarks and passwords stay on this device
+            </li>
+          </ul>
+        </div>
+
+        <img
+          src={withBase('/assets/images/brand/aetherfox-logo.webp')}
+          alt=""
+          width="240"
+          height="238"
+          loading="lazy"
+        />
       </div>
 
-      <div class="u-flow-lg u-mt-9">
-        <div class="section-head">
-          <h2 class="display">What you get</h2>
+      <div class="dl-platforms">
+        <div class="bento__card">
+          <span class="icon-box"><Icon name="dl" /></span>
+          <h3>Linux</h3>
+          <p>Build it yourself from source, or grab an AppImage from the releases page.</p>
+          <div class="bento__foot">
+            <a class="btn btn--secondary" href={release.page} target="_blank" rel="noopener">
+              See the releases
+            </a>
+          </div>
         </div>
-        <ul class="feature-list">
-          <li class="feature-row">
-            <span class="icon-box"><Icon name="ban" /></span>
-            <div class="feature-row__body">
-              <b>No telemetry, and nothing to opt out of</b>
-              <small>Aetherfox sends nothing back about you.</small>
-            </div>
-          </li>
-          <li class="feature-row">
-            <span class="icon-box"><Icon name="cloud" /></span>
-            <div class="feature-row__body">
-              <b>No account, no sync</b>
-              <small>Bookmarks and passwords stay on the device they were created on.</small>
-            </div>
-          </li>
-          <li class="feature-row">
-            <span class="icon-box"><Icon name="shield" /></span>
-            <div class="feature-row__body">
-              <b>Fingerprinting resistance</b>
-              <small>Each site reads slightly different values, so the picture never adds up.</small>
-            </div>
-          </li>
-        </ul>
+
+        <div class="bento__card">
+          <span class="icon-box"><Icon name="bk" /></span>
+          <h3>Source</h3>
+          <p>Aetherfox is Firefox. Everything it does is in the open.</p>
+          <div class="bento__foot">
+            <a
+              class="btn btn--secondary"
+              href="https://github.com/AetherGroup/aetherfox"
+              target="_blank"
+              rel="noopener"
+            >
+              Read the code
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </section>

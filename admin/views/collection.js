@@ -94,10 +94,11 @@ export async function renderCollection(root, schema, collection) {
       <a class="adm-entry" href="#/collections/${collection.name}/${file.name}">
         ${coverImg}
         <div class="adm-entry__body">
-          <div class="adm-entry__meta">
-            ${meta.date ? `<span>${formatDate(meta.date)}</span>` : ''}
-            ${file.frontmatter?.draft ? '<span class="adm-tag">Draft</span>' : ''}
-            ${file.frontmatter?.category ? `<span>${file.frontmatter.category}</span>` : ''}
+          <div class="adm-entry__chips">
+            ${meta.date ? `<span class="adm-chip">${formatDate(meta.date)}</span>` : ''}
+            ${file.frontmatter?.category ? `<span class="adm-chip">${file.frontmatter.category}</span>` : ''}
+            ${file.frontmatter?.draft ? '<span class="adm-chip adm-chip--warn">Draft</span>' : ''}
+            ${file.frontmatter?.featured ? '<span class="adm-chip adm-chip--accent">Featured</span>' : ''}
           </div>
           <h2 class="adm-entry__title">${meta.title}</h2>
           ${meta.description ? `<p class="adm-entry__text">${meta.description}</p>` : ''}
@@ -123,6 +124,7 @@ export async function renderOverview(root, schema) {
       <div class="adm-content">
         <div class="adm-page-head">
           <div>
+            <p class="adm-eyebrow">Dashboard</p>
             <h1 class="adm-title">Contents</h1>
             <p class="adm-sub">Everything published on aethergroup.github.io.</p>
           </div>
@@ -133,12 +135,22 @@ export async function renderOverview(root, schema) {
             .map(
               (c) => `
             <a class="adm-collection-card" href="#/collections/${c.name}">
+              <span class="adm-collection-card__icon">
+                <svg class="icon" aria-hidden="true"><use href="#i-${c.icon}" /></svg>
+              </span>
               <span class="adm-collection-card__label">${c.label}</span>
               <span class="adm-collection-card__path">${c.folder}</span>
-              <span class="adm-collection-card__count" data-count="${c.name}">…</span>
+              <span class="adm-chip" data-count="${c.name}">…</span>
             </a>`,
             )
             .join('')}
+        </div>
+
+        <div class="adm-hint">
+          <p>
+            Every change is a commit. Publishing pushes to <code>main</code> and the site rebuilds in
+            about two minutes.
+          </p>
         </div>
       </div>
     </div>

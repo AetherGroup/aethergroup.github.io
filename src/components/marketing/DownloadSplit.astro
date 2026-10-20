@@ -1,0 +1,73 @@
+---
+import { formatSize } from '../../lib/releases';
+
+type Props = {
+  installerUrl: string;
+  portableUrl: string;
+  version: string | null;
+  installerSize: number;
+  portableSize: number;
+};
+
+const { installerUrl, portableUrl, version, installerSize, portableSize } = Astro.props;
+---
+
+<div class="dl-split" data-split>
+  <a class="dl-split__main" href={installerUrl} download>
+    <svg class="icon" aria-hidden="true"><use href="#i-dl" /></svg>
+    Download for Windows
+    <span class="dl-split__meta">
+      {
+        version && (
+          <>
+            {version}
+            {installerSize > 0 && ` · ${formatSize(installerSize)}`}
+          </>
+        )
+      }
+    </span>
+  </a>
+
+  <button class="dl-split__toggle" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Other download options">
+    <svg class="icon" aria-hidden="true"><use href="#i-chev" /></svg>
+  </button>
+
+  <div class="dl-split__menu" role="menu" hidden>
+    <a role="menuitem" href={portableUrl} download>
+      <span class="dl-split__name">Portable</span>
+      <span class="dl-split__note">No install · {formatSize(portableSize)}</span>
+    </a>
+    <a role="menuitem" href={installerUrl} download>
+      <span class="dl-split__name">Installer</span>
+      <span class="dl-split__note">Sets up Aetherfox · {formatSize(installerSize)}</span>
+    </a>
+  </div>
+</div>
+
+<script>
+  const split = document.querySelector('[data-split]');
+  if (split) {
+    const toggle = split.querySelector('.dl-split__toggle');
+    const menu = split.querySelector('.dl-split__menu');
+
+    const close = () => {
+      menu.hidden = true;
+      toggle.setAttribute('aria-expanded', 'false');
+    };
+
+    toggle.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const open = menu.hidden;
+      menu.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!menu.hidden && !split.contains(event.target)) close();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') close();
+    });
+  }
+</script>

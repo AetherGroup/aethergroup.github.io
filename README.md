@@ -141,6 +141,28 @@ structure matches the site.
 
 Decap's `config.yml` is still generated, so it can be brought back if needed.
 
+## Downloads
+
+The download buttons point at the **latest GitHub release**, resolved at build
+time by `scripts/fetch-release.mjs`, which writes `src/data/releases.json`:
+
+```json
+{
+  "tag": "v0.1",
+  "assets": {
+    "installer": { "name": "AetherfoxSetup-156.0.1.exe", "url": "…", "size": 88818565 },
+    "portable": { "name": "aether-156.0.1.en-US.win64.zip", "url": "…", "size": 132344786 }
+  }
+}
+```
+
+The main button downloads the installer. The arrow next to it opens a menu with
+both, since some people want the portable version instead.
+
+The script never fails the build: if the GitHub API is unreachable it keeps the
+previous file. The deploy workflow also runs on a daily schedule, so a new
+release shows up within a day without anyone touching the site.
+
 ## Architecture
 
 See `ARCHITECTURE.md` for the full rationale: folder structure, CSS and JS

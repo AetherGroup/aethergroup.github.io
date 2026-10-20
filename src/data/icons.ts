@@ -19,6 +19,7 @@ export const icons = {
     '<path d="M8 18h8.5a3.5 3.5 0 0 0 .6-6.9A5 5 0 0 0 7.5 9.7 4.2 4.2 0 0 0 8 18z"/><path d="M5 5l14 14"/>',
   lay: '<rect x="4.5" y="5.5" width="15" height="13" rx="2.5"/><path d="M4.5 9.5h15"/>',
   dl: '<path d="M12 4.5v9M8.3 10l3.7 3.7 3.7-3.7M5.5 17.5v1A1.5 1.5 0 0 0 7 20h10a1.5 1.5 0 0 0 1.5-1.5v-1"/>',
+  chev: '<path d="M6 9.5l6 6 6-6"/>',
 } as const;
 
 export type IconName = keyof typeof icons;
