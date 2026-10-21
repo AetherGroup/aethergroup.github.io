@@ -1,5 +1,6 @@
 ---
 import { formatSize } from '../../lib/releases';
+import Icon from '../ui/Icon.astro';
 
 type Props = {
   installerUrl: string;
@@ -7,29 +8,49 @@ type Props = {
   version: string | null;
   installerSize: number;
   portableSize: number;
+  variant?: 'panel' | 'compact' | 'inverse';
+  label?: string;
+  showMeta?: boolean;
 };
 
-const { installerUrl, portableUrl, version, installerSize, portableSize } = Astro.props;
+const {
+  installerUrl,
+  portableUrl,
+  version,
+  installerSize,
+  portableSize,
+  variant = 'panel',
+  label = 'Download for Windows',
+  showMeta = variant === 'panel',
+} = Astro.props;
 ---
 
-<div class="dl-split" data-split>
+<div class:list={['dl-split', `dl-split--${variant}`]} data-split>
   <a class="dl-split__main" href={installerUrl} download>
-    <svg class="icon" aria-hidden="true"><use href="#i-dl" /></svg>
-    Download for Windows
-    <span class="dl-split__meta">
-      {
-        version && (
-          <>
-            {version}
-            {installerSize > 0 && ` · ${formatSize(installerSize)}`}
-          </>
-        )
-      }
-    </span>
+    {variant === 'compact' && <Icon name="dl" />}
+    <span class="dl-split__label">{label}</span>
+    {
+      showMeta && (
+        <span class="dl-split__meta">
+          {version && (
+            <>
+              {version}
+              {installerSize > 0 && ` · ${formatSize(installerSize)}`}
+            </>
+          )}
+        </span>
+      )
+    }
   </a>
 
-  <button class="dl-split__toggle" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Other download options">
-    <svg class="icon" aria-hidden="true"><use href="#i-chev" /></svg>
+  <button
+    class="dl-split__toggle"
+    type="button"
+    aria-haspopup="menu"
+    aria-expanded="false"
+    aria-label="Other download options"
+  >
+    <Icon name="chev" />
   </button>
 
   <div class="dl-split__menu" role="menu" hidden>
@@ -45,25 +66,33 @@ const { installerUrl, portableUrl, version, installerSize, portableSize } = Astr
 </div>
 
 <script>
-  const split = document.querySelector('[data-split]');
-  if (split) {
-    const toggle = split.querySelector('.dl-split__toggle');
-    const menu = split.querySelector('.dl-split__menu');
+  for (const split of document.querySelectorAll<HTMLElement>('[data-split]')) {
+    const toggle = split.querySelector<HTMLButtonElement>('.dl-split__toggle');
+    const menu = split.querySelector<HTMLElement>('.dl-split__menu');
+    if (!toggle || !menu) continue;
 
     const close = () => {
       menu.hidden = true;
       toggle.setAttribute('aria-expanded', 'false');
     };
 
+    const open = () => {
+      menu.hidden = false;
+      menu.classList.remove('is-up');
+      const rect = split.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      if (spaceBelow < menu.offsetHeight + 24) menu.classList.add('is-up');
+    };
+
     toggle.addEventListener('click', (event) => {
       event.stopPropagation();
-      const open = menu.hidden;
-      menu.hidden = !open;
-      toggle.setAttribute('aria-expanded', String(open));
+      if (menu.hidden) open();
+      else close();
     });
 
     document.addEventListener('click', (event) => {
-      if (!menu.hidden && !split.contains(event.target)) close();
+      const target = event.target as Node | null;
+      if (!menu.hidden && target && !split.contains(target)) close();
     });
 
     document.addEventListener('keydown', (event) => {

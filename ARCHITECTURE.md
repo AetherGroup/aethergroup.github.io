@@ -862,6 +862,66 @@ publish_mode: editorial_workflow
 
 ---
 
+### 6.6 El CMS propio (estado actual) - Decap quedó atrás
+
+Lo descrito en 6.3 y 6.5 es el plan original con Decap. **No es lo que hay desplegado.** Decap se eliminó porque su aplicación es una SPA de React con su propia estructura visual: no se puede reorganizar con CSS, solo maquillar. Cada vez que se tocaba el tema el resultado seguía siendo un dashboard genérico con barra lateral, que es justo lo que no queremos.
+
+El CMS actual está escrito desde cero en `admin/`:
+
+```
+admin/
+  index.html          # shell, bootstrap del tema, sprite de iconos
+  app.js              # arranque, router por hash, tema, menú de usuario
+  admin.css           # diseño del CMS (tokens de la marca, claro y oscuro)
+  schema.json         # fuente única: colecciones y campos
+  config.yml          # generado desde schema.json (compatibilidad)
+  lib/
+    api.js            # llamadas a la API de GitHub
+    auth-store.js     # token y usuario en localStorage
+    markdown.js       # frontmatter y formato de fecha
+  views/
+    collection.js     # overview y vista de colección
+    editor.js         # editor con escritura y vista previa
+    login.js          # pantalla de acceso
+    panels.js         # media y workflow
+```
+
+**Una sola fuente de verdad: `admin/schema.json`.** Define colecciones, carpeta, etiqueta, singular, icono y campos. De ahí se genera `admin/config.yml` (`scripts/generate-admin-config.mjs`) y se valida contra el esquema Zod de Astro (`scripts/check-schema.mjs`, corre en `prebuild` y falla si divergen). El CMS nunca describe una colección por su cuenta.
+
+#### 6.6.1 Estructura: la del sitio, no la de un dashboard
+
+El sitio público no tiene barra lateral: es una secuencia de secciones a lo ancho, cada una con su título display y su propio diseño. El CMS **sigue esa misma estructura**:
+
+- **Vista de contenidos** (`#/`): abre con un hero que replica el hero del sitio (título display a la izquierda, panel degradado con la acción principal a la derecha) y a continuación **una sección por colección**, cada una con la carpeta como eyebrow, el recuento, el enlace a ver todo y la rejilla de entradas.
+- **Vista de colección** (`#/collections/<nombre>`): la misma sección, con todas las entradas.
+- **Editor**: columna de escritura a la izquierda, vista previa a la derecha.
+
+No hay barra lateral en ninguna vista. Las colecciones se alcanzan desde las cabeceras de sección.
+
+#### 6.6.2 Tema
+
+El CMS sigue al tema del sistema, igual que la web, con un conmutador en la cabecera (sol/luna) que recuerda la elección en `aetherfox:admin-theme`. El bootstrap va en un script inline en `admin/index.html` para que no haya parpadeo. El oscuro se corrigió: las tarjetas llevan un filo claro arriba (`inset 0 1px 0`) y las secciones se separan por el fondo de la página, de modo que no se leen como una sola masa morada.
+
+#### 6.6.3 Autenticación
+
+El worker de `oauth-worker/` hace el OAuth de GitHub y pasa el token al CMS por `postMessage`. El token se guarda en `localStorage` (`aetherfox-admin:token`) y se usa contra la API de GitHub para listar, leer y escribir. Publicar es un commit: el sitio se reconstruye en el push.
+
+#### 6.6.4 Descargas
+
+`scripts/fetch-release.mjs` resuelve la última release de GitHub en tiempo de build y escribe `src/data/releases.json`. Si la API falla, el build **no falla**: conserva el `releases.json` anterior. Un workflow diario vuelve a lanzarlo.
+
+El botón de descarga es uno solo y partido: `src/components/marketing/DownloadSplit.astro`, con la parte principal apuntando al instalador y un chevron que abre un menú con **Portable** e **Installer**. Hay tres variantes:
+
+| Variante | Dónde | Aspecto |
+| --- | --- | --- |
+| `compact` | cabecera de todas las páginas | Botón `Download` con chevron |
+| `panel` | página `/download/` | Botón con versión y tamaño debajo |
+| `inverse` | panel de descarga de la home | Botón blanco sobre el degradado |
+
+El menú se voltea hacia arriba cuando no cabe abajo (`is-up`), y el script cablea **todos** los `[data-split]` de la página, no solo el primero.
+
+---
+
 ## 7. BaseLayout, SEO y datos de la web
 
 ### 7.1 Cabecera (`BaseLayout.astro`)

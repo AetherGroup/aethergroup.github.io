@@ -1,13 +1,17 @@
 ---
 import { navigation } from '../../data/site';
 import { withBase } from '../../lib/url';
+import { installer, portable, release } from '../../lib/releases';
 import Icon from '../ui/Icon.astro';
+import DownloadSplit from '../marketing/DownloadSplit.astro';
 
 const current = Astro.url.pathname;
 const isActive = (href: string) => {
   const path = href.split('#')[0];
   return path !== '/' && current.startsWith(path);
 };
+
+const version = release.tag ? release.tag.replace(/^v/, '') : null;
 ---
 
 <header class="site-header">
@@ -28,10 +32,24 @@ const isActive = (href: string) => {
     </nav>
 
     <div class="site-nav__actions">
-      <a class="btn" href={withBase('/download')}>
-        <Icon name="dl" />
-        Download
-      </a>
+      {
+        installer ? (
+          <DownloadSplit
+            variant="compact"
+            installerUrl={installer.url}
+            portableUrl={portable?.url ?? installer.url}
+            version={version}
+            installerSize={installer.size}
+            portableSize={portable?.size ?? 0}
+            label="Download"
+          />
+        ) : (
+          <a class="btn" href={withBase('/download')}>
+            <Icon name="dl" />
+            Download
+          </a>
+        )
+      }
       <button
         class="site-nav__toggle"
         type="button"

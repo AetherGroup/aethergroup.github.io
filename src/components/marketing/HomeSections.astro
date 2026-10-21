@@ -2,6 +2,10 @@
 import { fingerprinting, leftOut } from '../../data/features';
 import Icon from '../ui/Icon.astro';
 import { withBase } from '../../lib/url';
+import { installer, portable, release } from '../../lib/releases';
+import DownloadSplit from './DownloadSplit.astro';
+
+const version = release.tag ? release.tag.replace(/^v/, '') : null;
 ---
 
 <section class="section" id="privacy">
@@ -69,10 +73,23 @@ import { withBase } from '../../lib/url';
         <h2 class="display">Get Aetherfox.</h2>
         <p>Free for Windows and Linux. Import your bookmarks and passwords in a minute.</p>
         <div class="cluster">
-          <a class="btn btn--inverse" href={withBase('/download')}>
-            <Icon name="dl" />
-            Download for Windows
-          </a>
+          {
+            installer ? (
+              <DownloadSplit
+                variant="inverse"
+                installerUrl={installer.url}
+                portableUrl={portable?.url ?? installer.url}
+                version={version}
+                installerSize={installer.size}
+                portableSize={portable?.size ?? 0}
+              />
+            ) : (
+              <a class="btn btn--inverse" href={withBase('/download')}>
+                <Icon name="dl" />
+                Download for Windows
+              </a>
+            )
+          }
           <a class="btn btn--inverse-secondary" href={withBase('/download')}>Linux</a>
         </div>
       </div>
