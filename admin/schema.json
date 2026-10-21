@@ -10,6 +10,8 @@
       "folder": "content/news",
       "identifier_field": "title",
       "summary": "{{title}} — {{date}}",
+      "description": "Announcements, releases and notes from the team.",
+      "route": "/news/{slug}",
       "fields": [
         {
           "label": "Title",
@@ -82,7 +84,7 @@
           "default": false
         }
       ],
-      "icon": "text"
+      "icon": "news"
     },
     {
       "name": "changelog",
@@ -91,6 +93,8 @@
       "folder": "content/changelog",
       "identifier_field": "version",
       "summary": "{{version}} — {{title}}",
+      "description": "Every version of Aetherfox and what changed in it.",
+      "route": "/changelog/{slug}",
       "fields": [
         {
           "label": "Version",
@@ -145,7 +149,7 @@
           "default": false
         }
       ],
-      "icon": "rl"
+      "icon": "tag"
     },
     {
       "name": "pages",
@@ -153,6 +157,9 @@
       "label_singular": "Page",
       "folder": "content/pages",
       "identifier_field": "title",
+      "description": "Standalone pages of the site, one file each.",
+      "route": "/{slug}",
+      "routed": ["privacy"],
       "fields": [
         {
           "label": "Title",

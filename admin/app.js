@@ -1,21 +1,25 @@
 import { getToken, setUser, clearToken } from './lib/auth-store.js';
 import { setRepo, currentUser } from './lib/api.js';
 import { renderLogin } from './views/login.js';
-import { renderCollection, renderOverview } from './views/collection.js';
+import { renderContents } from './views/collection.js';
 import { renderEditor } from './views/editor.js';
 import { renderMedia, renderWorkflow } from './views/panels.js';
 
 const view = document.querySelector('[data-view]');
-const newButton = document.querySelector('[data-new]');
 const avatar = document.querySelector('[data-menu-toggle]');
 const toasts = document.querySelector('[data-toasts]');
+const searchBox = document.querySelector('[data-search]');
+const searchInput = document.querySelector('[data-search-input]');
+const newMenu = document.querySelector('[data-newmenu]');
+const newToggle = document.querySelector('[data-new-toggle]');
+const newList = document.querySelector('[data-new-list]');
 
 let schema = null;
-let currentCollection = null;
 
 async function boot() {
   schema = await (await fetch('/admin/schema.json')).json();
   setRepo(schema.repo, schema.branch);
+  buildNewMenu();
 
   if (!getToken()) {
     renderLogin(view, () => location.reload());
@@ -75,10 +79,65 @@ function setupUserMenu() {
   });
 }
 
+function buildNewMenu() {
+  newList.innerHTML = schema.collections
+    .map(
+      (collection) => `
+      <button class="adm-newmenu__item" type="button" role="menuitem" data-new-collection="${collection.name}">
+        <span class="adm-newmenu__icon"><svg class="icon" aria-hidden="true"><use href="#i-${collection.icon}" /></svg></span>
+        <span class="adm-newmenu__text">
+          <strong>New ${collection.label_singular.toLowerCase()}</strong>
+          <small>${collection.folder}</small>
+        </span>
+      </button>`,
+    )
+    .join('');
+
+  newToggle.addEventListener('click', (event) => {
+    event.stopPropagation();
+    const open = newList.hidden;
+    newList.hidden = !open;
+    newToggle.setAttribute('aria-expanded', String(open));
+  });
+
+  newList.addEventListener('click', (event) => {
+    const item = event.target.closest('[data-new-collection]');
+    if (!item) return;
+    newList.hidden = true;
+    newToggle.setAttribute('aria-expanded', 'false');
+    location.hash = `#/collections/${item.dataset.newCollection}/new`;
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!newList.hidden && !newMenu.contains(event.target)) {
+      newList.hidden = true;
+      newToggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+}
+
+function setupSearch() {
+  searchInput.addEventListener('input', () => {
+    document.dispatchEvent(
+      new CustomEvent('adm:search', { detail: searchInput.value }),
+    );
+  });
+}
+
+function setSearchVisible(visible) {
+  searchBox.hidden = !visible;
+  if (!visible && searchInput.value) {
+    searchInput.value = '';
+    document.dispatchEvent(new CustomEvent('adm:search', { detail: '' }));
+  }
+}
+
 function setNav(name) {
   for (const link of document.querySelectorAll('[data-nav]')) {
-    link.toggleAttribute('aria-current', link.dataset.nav === name);
-    if (link.dataset.nav === name) link.setAttribute('aria-current', 'page');
+    const on = link.dataset.nav === name;
+    link.classList.toggle('is-active', on);
+    if (on) link.setAttribute('aria-current', 'page');
+    else link.removeAttribute('aria-current');
   }
 }
 
@@ -88,67 +147,60 @@ function route() {
 
   if (!parts.length) {
     setNav('contents');
-    newButton.hidden = true;
-    renderOverview(view, schema);
+    setSearchVisible(true);
+    renderContents(view, schema, '');
     return;
   }
 
   if (parts[0] === 'media') {
     setNav('media');
-    newButton.hidden = true;
+    setSearchVisible(false);
     renderMedia(view);
     return;
   }
 
   if (parts[0] === 'workflow') {
     setNav('workflow');
-    newButton.hidden = true;
+    setSearchVisible(false);
     renderWorkflow(view);
     return;
   }
 
   if (parts[0] !== 'collections' || !parts[1]) {
     setNav('contents');
-    newButton.hidden = true;
-    renderOverview(view, schema);
+    setSearchVisible(true);
+    renderContents(view, schema, '');
     return;
   }
 
   const collection = schema.collections.find((c) => c.name === parts[1]);
   if (!collection) {
     setNav('contents');
-    newButton.hidden = true;
-    renderOverview(view, schema);
+    setSearchVisible(true);
+    renderContents(view, schema, '');
     return;
   }
 
-  currentCollection = collection;
   setNav('contents');
 
   if (parts[2] === 'new') {
-    newButton.hidden = true;
+    setSearchVisible(false);
     renderEditor(view, schema, collection, null);
     return;
   }
 
   if (parts[2]) {
-    newButton.hidden = true;
+    setSearchVisible(false);
     renderEditor(view, schema, collection, decodeURIComponent(parts.slice(2).join('/')));
     return;
   }
 
-  newButton.hidden = false;
-  newButton.onclick = () => {
-    location.hash = `#/collections/${collection.name}/new`;
-  };
-  renderCollection(view, schema, collection);
+  setSearchVisible(true);
+  renderContents(view, schema, collection.name);
 }
 
-newButton?.addEventListener('click', () => {
-  if (currentCollection) location.hash = `#/collections/${currentCollection.name}/new`;
-});
-
 setupUserMenu();
+setupSearch();
 
 const THEME_KEY = 'aetherfox:admin-theme';
 

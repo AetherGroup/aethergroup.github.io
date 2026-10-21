@@ -864,47 +864,56 @@ publish_mode: editorial_workflow
 
 ### 6.6 El CMS propio (estado actual) - Decap quedó atrás
 
-Lo descrito en 6.3 y 6.5 es el plan original con Decap. **No es lo que hay desplegado.** Decap se eliminó porque su aplicación es una SPA de React con su propia estructura visual: no se puede reorganizar con CSS, solo maquillar. Cada vez que se tocaba el tema el resultado seguía siendo un dashboard genérico con barra lateral, que es justo lo que no queremos.
+Lo descrito en 6.3 y 6.5 es el plan original con Decap. **No es lo que hay desplegado.** Decap se eliminó porque su aplicación es una SPA de React con su propia estructura visual: no se puede reorganizar con CSS, solo maquillar. Cada vez que se tocaba el tema el resultado seguía siendo un dashboard genérico, que es justo lo que no queremos.
 
 El CMS actual está escrito desde cero en `admin/`:
 
 ```
 admin/
-  index.html          # shell, bootstrap del tema, sprite de iconos
-  app.js              # arranque, router por hash, tema, menú de usuario
+  index.html          # shell, cabecera, pie y sprite de iconos
+  app.js              # arranque, router por hash, tema, menús
   admin.css           # diseño del CMS (tokens de la marca, claro y oscuro)
-  schema.json         # fuente única: colecciones y campos
+  schema.json         # fuente única: colecciones, campos, rutas y textos
   config.yml          # generado desde schema.json (compatibilidad)
   lib/
     api.js            # llamadas a la API de GitHub
     auth-store.js     # token y usuario en localStorage
     markdown.js       # frontmatter y formato de fecha
   views/
-    collection.js     # overview y vista de colección
-    editor.js         # editor con escritura y vista previa
+    collection.js     # vista de contenidos (lista y panel de estado)
+    editor.js         # editor con escritura, vista previa y borrado
     login.js          # pantalla de acceso
     panels.js         # media y workflow
 ```
 
-**Una sola fuente de verdad: `admin/schema.json`.** Define colecciones, carpeta, etiqueta, singular, icono y campos. De ahí se genera `admin/config.yml` (`scripts/generate-admin-config.mjs`) y se valida contra el esquema Zod de Astro (`scripts/check-schema.mjs`, corre en `prebuild` y falla si divergen). El CMS nunca describe una colección por su cuenta.
+**Una sola fuente de verdad: `admin/schema.json`.** Define colecciones, carpeta, etiqueta, singular, icono, descripción y ruta pública de cada una, además de los campos. De ahí se genera `admin/config.yml` (`scripts/generate-admin-config.mjs`) y se valida contra el esquema Zod de Astro (`scripts/check-schema.mjs`, corre en `prebuild` y falla si divergen). El CMS nunca describe una colección por su cuenta.
 
-#### 6.6.1 Estructura: la del sitio, no la de un dashboard
+#### 6.6.1 Estructura: barra superior y espacio de trabajo
 
-El sitio público no tiene barra lateral: es una secuencia de secciones a lo ancho, cada una con su título display y su propio diseño. El CMS **sigue esa misma estructura**:
+El CMS no es un dashboard de tarjetas. Es una aplicación con dos zonas y una jerarquía clara:
 
-- **Vista de contenidos** (`#/`): abre con un hero que replica el hero del sitio (título display a la izquierda, panel degradado con la acción principal a la derecha) y a continuación **una sección por colección**, cada una con la carpeta como eyebrow, el recuento, el enlace a ver todo y la rejilla de entradas.
-- **Vista de colección** (`#/collections/<nombre>`): la misma sección, con todas las entradas.
-- **Editor**: columna de escritura a la izquierda, vista previa a la derecha.
+**Barra superior (fija):** marca a la izquierda, secciones (`Contents`, `Workflow`, `Media`), buscador, y a la derecha el botón **New entry** con chevron (que abre el menú de colecciones) junto al conmutador de tema y al avatar.
 
-No hay barra lateral en ninguna vista. Las colecciones se alcanzan desde las cabeceras de sección.
+**Espacio de trabajo (dos columnas):**
+
+- **Columna principal**: cabecera de página (eyebrow con la carpeta, título, descripción) y el **selector de colección** en forma de pestañas con recuento (`All 6 · News 3 · Changelog 2 · Static pages 1`). Debajo, **una sola lista de entradas**, no una rejilla de tarjetas repetida por colección:
+  - La pestaña `All` mezcla todo y ordena por fecha.
+  - Cada fila es una fila, no una tarjeta: miniatura, título, línea de metadatos (fecha, colección, categoría, estado) y acciones.
+  - Solo `Edit` está siempre visible. `Ver publicado` y `Abrir el fichero en GitHub` aparecen al pasar por encima.
+  - El buscador de la cabecera filtra la lista en vivo.
+- **Panel lateral**: estado (publicados, borradores, entradas, colecciones), actividad reciente (los commits que tocan `content/`) y enlaces al sitio, al repositorio y a las releases.
+
+**Editor:** el formulario son dos tarjetas (`Details` y `Content markdown`), con los campos cortos en rejilla de dos columnas, la vista previa en vivo a la derecha, y en la barra las acciones `Save`/`Publish` y `Delete`.
 
 #### 6.6.2 Tema
 
-El CMS sigue al tema del sistema, igual que la web, con un conmutador en la cabecera (sol/luna) que recuerda la elección en `aetherfox:admin-theme`. El bootstrap va en un script inline en `admin/index.html` para que no haya parpadeo. El oscuro se corrigió: las tarjetas llevan un filo claro arriba (`inset 0 1px 0`) y las secciones se separan por el fondo de la página, de modo que no se leen como una sola masa morada.
+El CMS sigue al tema del sistema, igual que la web, con un conmutador en la cabecera (sol/luna) que recuerda la elección en `aetherfox:admin-theme`. El bootstrap va en un script inline en `admin/index.html` para que no haya parpadeo.
 
-#### 6.6.3 Autenticación
+#### 6.6.3 Autenticación y publicación
 
-El worker de `oauth-worker/` hace el OAuth de GitHub y pasa el token al CMS por `postMessage`. El token se guarda en `localStorage` (`aetherfox-admin:token`) y se usa contra la API de GitHub para listar, leer y escribir. Publicar es un commit: el sitio se reconstruye en el push.
+El worker de `oauth-worker/` hace el OAuth de GitHub y pasa el token al CMS por `postMessage`. El token se guarda en `localStorage` (`aetherfox-admin:token`) y se usa contra la API de GitHub para listar, leer, escribir y borrar. Publicar es un commit: el sitio se reconstruye en el push.
+
+El listado de la API de GitHub va con un parámetro de caché (`?t=<timestamp>`): sin él, una entrada recién publicada no aparecía en la lista hasta que expiraba la caché del listing. El frontmatter se lee de `raw.githubusercontent.com` y se cachea 60 segundos en memoria, invalidándose al guardar.
 
 #### 6.6.4 Descargas
 

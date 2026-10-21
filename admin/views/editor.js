@@ -1,8 +1,11 @@
-import { readFile, writeFile, repoBranch } from '../lib/api.js';
+import { readFile, writeFile, deleteFile, repoBranch } from '../lib/api.js';
 import { marked } from '../vendor/marked.js';
 import { parseFrontmatter, stringifyFrontmatter, slugify, formatDate } from '../lib/markdown.js';
+import { invalidateFrontmatter } from './collection.js';
 
 const dateFields = ['date', 'updated'];
+
+const wideWidgets = new Set(['text', 'image']);
 
 function fieldValue(field, data) {
   const value = data[field.name];
@@ -18,7 +21,7 @@ function fieldValue(field, data) {
   return value;
 }
 
-function renderField(field, data) {
+function renderField(field, data, wide) {
   const id = `f-${field.name}`;
   const value = fieldValue(field, data);
   const required = field.required === false ? '' : ' required';
@@ -90,7 +93,7 @@ function renderField(field, data) {
       )}"${required} />`;
   }
 
-  return `<div class="adm-field adm-field--${field.widget}">${label}${control}</div>`;
+  return `<div class="adm-field adm-field--${field.widget}${wide ? ' adm-field--wide' : ''}">${label}${control}</div>`;
 }
 
 function escapeHtml(value) {
@@ -138,6 +141,14 @@ export async function renderEditor(root, schema, collection, fileName) {
           </a>
           <div class="adm-editor__bar-actions">
             <span class="adm-status" data-status></span>
+            ${
+              isNew
+                ? ''
+                : `<button class="adm-btn adm-btn--danger" type="button" data-delete>
+                     <svg class="icon" aria-hidden="true"><use href="#i-trash" /></svg>
+                     Delete
+                   </button>`
+            }
             <button class="btn" type="button" data-save>
               <svg class="icon" aria-hidden="true"><use href="#i-check" /></svg>
               ${isNew ? 'Publish' : 'Save'}
@@ -155,14 +166,29 @@ export async function renderEditor(root, schema, collection, fileName) {
             }</h1>
 
             <form class="adm-form" data-form>
-              ${collection.fields.map((field) => renderField(field, data)).join('')}
+              <section class="adm-formpanel">
+                <h2 class="adm-formpanel__title">Details</h2>
+                <div class="adm-formgrid">
+                  ${collection.fields
+                    .map((field) =>
+                      renderField(
+                        field,
+                        data,
+                        field.name === idField || wideWidgets.has(field.widget),
+                      ),
+                    )
+                    .join('')}
+                </div>
+              </section>
 
-              <div class="adm-field adm-field--markdown">
-                <label class="adm-field__label" for="f-body">Content <span class="adm-field__optional">markdown</span></label>
+              <section class="adm-formpanel">
+                <h2 class="adm-formpanel__title">
+                  Content <span class="adm-field__optional">markdown</span>
+                </h2>
                 <textarea class="adm-input adm-input--body" id="f-body" name="body" rows="18">${escapeHtml(
                   body,
                 )}</textarea>
-              </div>
+              </section>
             </form>
           </div>
 
@@ -180,6 +206,7 @@ export async function renderEditor(root, schema, collection, fileName) {
   const form = root.querySelector('[data-form]');
   const status = root.querySelector('[data-status]');
   const saveButton = root.querySelector('[data-save]');
+  const deleteButton = root.querySelector('[data-delete]');
   const titlePreview = root.querySelector('[data-title-preview]');
   const previewHost = root.querySelector('[data-preview]');
 
@@ -296,6 +323,7 @@ export async function renderEditor(root, schema, collection, fileName) {
 
     try {
       await writeFile(target, content, sha, message, repoBranch());
+      invalidateFrontmatter(`${collection.folder}/${target.split('/').pop()}`);
       status.textContent = 'Saved';
       setTimeout(() => {
         location.hash = `#/collections/${collection.name}`;
@@ -304,6 +332,36 @@ export async function renderEditor(root, schema, collection, fileName) {
       status.textContent = '';
       saveButton.disabled = false;
       alert(`Could not save: ${error.message}`);
+    }
+  });
+
+  deleteButton?.addEventListener('click', async () => {
+    const title = data[idField] || fileName;
+    const confirmed = window.confirm(
+      `Delete "${title}"?\n\nThe file is removed from the repository in a commit. The site rebuilds without it.`,
+    );
+    if (!confirmed) return;
+
+    deleteButton.disabled = true;
+    status.textContent = 'Deleting…';
+
+    try {
+      await deleteFile(
+        `${collection.folder}/${fileName}`,
+        sha,
+        `cms: delete ${collection.name} «${slugify(title)}»`,
+        repoBranch(),
+      );
+      invalidateFrontmatter(`${collection.folder}/${fileName}`);
+      status.textContent = 'Deleted';
+      setTimeout(() => {
+        location.hash = `#/collections/${collection.name}`;
+      }, 600);
+    } catch (error) {
+      status.textContent = '';
+      status.classList.add('is-error');
+      deleteButton.disabled = false;
+      alert(`Could not delete: ${error.message}`);
     }
   });
 }

@@ -37,10 +37,10 @@ async function request(path, { method = 'GET', body } = {}) {
 }
 
 export const listFolder = (folder, branch) =>
-  request(`/repos/${repoPath()}/contents/${folder}?ref=${branch}`);
+  request(`/repos/${repoPath()}/contents/${folder}?ref=${branch}&t=${Date.now()}`);
 
 export const readFile = (path, branch) =>
-  request(`/repos/${repoPath()}/contents/${path}?ref=${branch}`);
+  request(`/repos/${repoPath()}/contents/${path}?ref=${branch}&t=${Date.now()}`);
 
 export function writeFile(path, content, sha, message, branch) {
   return request(`/repos/${repoPath()}/contents/${path}`, {
@@ -54,7 +54,19 @@ export function writeFile(path, content, sha, message, branch) {
   });
 }
 
+export function deleteFile(path, sha, message, branch) {
+  return request(`/repos/${repoPath()}/contents/${path}`, {
+    method: 'DELETE',
+    body: { message, sha, branch },
+  });
+}
+
 export const currentUser = () => request('/user');
+
+export const listCommits = (path, branch) =>
+  request(
+    `/repos/${repoPath()}/commits?path=${path}&sha=${branch}&per_page=10`,
+  );
 
 export const rawUrl = (path, branch) =>
   `https://raw.githubusercontent.com/${repoPath()}/${branch}/${path}`;
