@@ -150,6 +150,34 @@ newButton?.addEventListener('click', () => {
 
 setupUserMenu();
 
+const THEME_KEY = 'aetherfox:admin-theme';
+
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  const icon = document.querySelector('[data-theme-icon] use');
+  if (icon) icon.setAttribute('href', theme === 'aetherdark' ? '#i-moon' : '#i-sun');
+  try {
+    localStorage.setItem(THEME_KEY, theme);
+  } catch {}
+}
+
+function setupThemeToggle() {
+  const button = document.querySelector('[data-theme-toggle]');
+  if (!button) return;
+
+  const current = document.documentElement.dataset.theme || 'aetherlight';
+  const icon = button.querySelector('[data-theme-icon] use');
+  if (icon) icon.setAttribute('href', current === 'aetherdark' ? '#i-moon' : '#i-sun');
+
+  button.addEventListener('click', () => {
+    const next =
+      document.documentElement.dataset.theme === 'aetherdark' ? 'aetherlight' : 'aetherdark';
+    applyTheme(next);
+  });
+}
+
+setupThemeToggle();
+
 boot().catch((error) => {
   view.innerHTML = `<div class="adm-content"><p class="adm-error">${error.message}</p></div>`;
 });

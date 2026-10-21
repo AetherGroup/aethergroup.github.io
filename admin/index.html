@@ -18,10 +18,18 @@
 
     <script>
       (() => {
-        // El CMS se queda en el tema claro de la marca: fondo lavanda, tarjetas
-        // blancas y acentos morados. Es la identidad de Aetherfox. El oscuro
-        // existe en la web pública, pero aquí solo se vería plano.
-        document.documentElement.dataset.theme = 'aetherlight';
+        // El CMS sigue al tema del sistema, como la web pública. El conmutador
+        // de la cabecera lo cambia y la elección se recuerda.
+        const KEY = 'aetherfox:admin-theme';
+        let stored = null;
+        try {
+          stored = localStorage.getItem(KEY);
+        } catch {}
+        const system = matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'aetherdark'
+          : 'aetherlight';
+        document.documentElement.dataset.theme =
+          stored === 'aetherdark' || stored === 'aetherlight' ? stored : system;
       })();
     </script>
   </head>
@@ -47,6 +55,15 @@
             New entry
           </button>
           <div class="adm-user">
+            <button
+              class="adm-iconbtn"
+              type="button"
+              data-theme-toggle
+              aria-label="Cambiar de tema"
+              title="Cambiar de tema"
+            >
+              <svg class="icon" aria-hidden="true" data-theme-icon><use href="#i-sun" /></svg>
+            </button>
             <button
               class="adm-avatar"
               type="button"
@@ -101,6 +118,8 @@
         <symbol id="i-lay" viewBox="0 0 24 24"><rect x="4.5" y="5.5" width="15" height="13" rx="2.5"/><path d="M4.5 9.5h15"/></symbol>
         <symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 4.5v9M8.3 10l3.7 3.7 3.7-3.7M5.5 17.5v1A1.5 1.5 0 0 0 7 20h10a1.5 1.5 0 0 0 1.5-1.5v-1"/></symbol>
         <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></symbol>
+        <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+        <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></symbol>
         <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
         <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M10.5 6.5L5 12l5.5 5.5"/></symbol>
         <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>

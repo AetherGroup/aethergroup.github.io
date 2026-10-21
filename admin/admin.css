@@ -117,6 +117,29 @@ body.adm {
 
 .adm-user {
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.adm-iconbtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--c-text-muted);
+  cursor: pointer;
+  transition:
+    background 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
+    color 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.adm-iconbtn:hover {
+  background: color-mix(in srgb, var(--c-text) 8%, transparent);
+  color: var(--c-text-strong);
 }
 
 .adm-avatar {
@@ -200,15 +223,6 @@ body.adm {
   flex: 1 0 auto;
 }
 
-.adm-shell {
-  display: flex;
-  align-items: flex-start;
-  gap: 28px;
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 32px 28px 72px;
-}
-
 .adm-content {
   flex: 1 1 auto;
   min-width: 0;
@@ -220,52 +234,140 @@ body.adm {
   padding: 32px 28px 72px;
 }
 
-/* ---------------------------------------------------------------------------
-   Colecciones (barra lateral)
-   --------------------------------------------------------------------------- */
-
-.adm-collections {
-  position: sticky;
-  top: 94px;
-  width: 240px;
-  flex: none;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 18px 14px;
-  background: var(--c-surface);
-  border: 1px solid var(--c-border);
-  border-radius: var(--r-lg);
+.adm-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 56px;
+  align-items: center;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 56px 28px 64px;
 }
 
-.adm-collections__title {
-  margin: 0 0 10px;
-  padding: 0 8px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
+.adm-hero__title {
+  margin: 0;
+  font-family: 'Bricolage Grotesque', 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(30px, 4.2vw, 46px);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.06;
+  color: var(--c-text-strong);
+}
+
+.adm-hero__lead {
+  max-width: 46ch;
+  margin: 18px 0 0;
+  font-size: 17px;
+  line-height: 1.55;
   color: var(--c-text-muted);
 }
 
-.adm-collection {
-  padding: 9px 10px;
-  border-radius: var(--r-sm);
-  color: var(--c-text);
-  font-weight: 600;
-  font-size: 14px;
-  text-decoration: none;
+.adm-hero__panel {
+  padding: 26px 28px 28px;
+  border-radius: var(--r-lg);
+  background: var(--c-gradient-primary);
+  color: #fff;
+  box-shadow: 0 40px 70px -40px var(--c-shadow);
 }
 
-.adm-collection:hover {
+.adm-hero__panel-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 14px;
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+.adm-hero__panel-title {
+  margin: 0 0 6px;
+  font-family: 'Bricolage Grotesque', 'Plus Jakarta Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.adm-hero__panel-text {
+  margin: 0 0 18px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+.adm-hero__cta {
+  background: #fff;
+  color: #3b2f8f;
+  border: 0;
+  box-shadow: none;
+}
+
+.adm-hero__cta:hover {
+  color: #3b2f8f;
+  filter: brightness(0.97);
+}
+
+.adm-section {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 28px 64px;
+}
+
+.adm-section--single {
+  padding-top: 40px;
+}
+
+.adm-section__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 20px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid var(--c-border);
+}
+
+.adm-section__title {
+  margin: 0;
+  font-family: 'Bricolage Grotesque', 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(26px, 3.2vw, 36px);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.06;
+  color: var(--c-text-strong);
+}
+
+.adm-section__aside {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.adm-section__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: var(--r-sm);
+  color: var(--c-text-muted);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.adm-section__more:hover {
   background: color-mix(in srgb, var(--c-accent) 12%, transparent);
   color: var(--c-text-strong);
 }
 
-.adm-collection.is-active {
-  background: color-mix(in srgb, var(--c-accent) 16%, transparent);
-  color: var(--c-text-strong);
-  box-shadow: inset 3px 0 0 var(--c-accent);
+.adm-section__more .icon {
+  width: 15px;
+  height: 15px;
+  transform: rotate(-90deg);
 }
 
 /* ---------------------------------------------------------------------------
@@ -961,26 +1063,29 @@ body:has(.adm-login) .adm-header {
    Responsive
    --------------------------------------------------------------------------- */
 
+:root[data-theme='aetherdark'] .adm-entry,
+:root[data-theme='aetherdark'] .adm-hero__panel {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 20px 40px -28px var(--c-shadow);
+}
+
 @media (max-width: 900px) {
-  .adm-shell {
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .adm-collections {
-    position: static;
-    width: 100%;
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  .adm-collections__title {
-    width: 100%;
+  .adm-hero {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 36px 28px 48px;
   }
 
   .adm-entries,
   .adm-collection-grid {
     grid-template-columns: 1fr;
+  }
+
+  .adm-section__head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
 
   .adm-nav {

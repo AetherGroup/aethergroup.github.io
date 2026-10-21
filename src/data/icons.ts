@@ -20,6 +20,8 @@ export const icons = {
   lay: '<rect x="4.5" y="5.5" width="15" height="13" rx="2.5"/><path d="M4.5 9.5h15"/>',
   dl: '<path d="M12 4.5v9M8.3 10l3.7 3.7 3.7-3.7M5.5 17.5v1A1.5 1.5 0 0 0 7 20h10a1.5 1.5 0 0 0 1.5-1.5v-1"/>',
   chev: '<path d="M6 9.5l6 6 6-6"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon: '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>',
 } as const;
 
 export type IconName = keyof typeof icons;
