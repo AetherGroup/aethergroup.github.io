@@ -181,6 +181,7 @@ function activityMarkup(commits) {
     return '<li class="adm-activity__empty">No commits yet.</li>';
   }
   return commits
+    .slice(0, 5)
     .map((c) => {
       const message = String(c.commit?.message || '').split('\n')[0];
       return `
