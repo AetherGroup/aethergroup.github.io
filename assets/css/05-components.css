@@ -1150,6 +1150,137 @@
     font-weight: 600;
   }
 
+  .bg-breaking {
+    padding: 0.1em 0.35em;
+    border-radius: 5px;
+    background: var(--c-danger-soft);
+    color: var(--c-danger);
+    font-weight: 600;
+  }
+
+  .bg-added {
+    padding: 0.1em 0.35em;
+    border-radius: 5px;
+    background: var(--c-success-soft);
+    color: var(--c-success);
+    font-weight: 600;
+  }
+
+  .bg-fixed {
+    padding: 0.1em 0.35em;
+    border-radius: 5px;
+    background: var(--c-info-soft);
+    color: var(--c-info);
+    font-weight: 600;
+  }
+
+  .bg-changed {
+    padding: 0.1em 0.35em;
+    border-radius: 5px;
+    background: color-mix(in srgb, var(--c-accent) 14%, transparent);
+    color: var(--c-accent);
+    font-weight: 600;
+  }
+
+  .bg-deprecated {
+    padding: 0.1em 0.35em;
+    border-radius: 5px;
+    background: var(--c-warning-soft);
+    color: var(--c-warning);
+    font-weight: 600;
+  }
+
+  /* -------------------------------------------------------------------------
+     Texto enriquecido. Tambien lo inserta el CMS.
+     ---------------------------------------------------------------------- */
+
+  .tx-big {
+    font-size: 1.18em;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .tx-small {
+    font-size: 0.86em;
+  }
+
+  u {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1.5px;
+  }
+
+  mark {
+    padding: 0.1em 0.3em;
+    border-radius: 4px;
+    background: var(--c-warning-soft);
+    color: inherit;
+  }
+
+  kbd {
+    padding: 0.15em 0.45em;
+    border: 1px solid var(--c-border);
+    border-bottom-width: 2px;
+    border-radius: 5px;
+    background: var(--c-surface-2);
+    color: var(--c-text-strong);
+    font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+    font-size: 0.82em;
+    font-weight: 600;
+  }
+
+  sup,
+  sub {
+    font-size: 0.72em;
+    line-height: 0;
+  }
+
+  .md-details {
+    padding: 13px 16px;
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-md);
+    background: var(--c-surface-2);
+  }
+
+  .md-details > summary {
+    color: var(--c-text-strong);
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .md-details > summary::marker {
+    color: var(--c-accent);
+  }
+
+  .md-details > * + * {
+    margin-top: var(--sp-3);
+  }
+
+  /* -------------------------------------------------------------------------
+     Listas de tareas (GFM)
+     ---------------------------------------------------------------------- */
+
+  .prose ul.contains-task-list {
+    padding-inline-start: 0;
+    list-style: none;
+  }
+
+  .prose li.task-list-item {
+    display: flex;
+    align-items: baseline;
+    list-style: none;
+  }
+
+  .prose li.task-list-item input[type='checkbox'] {
+    margin-right: 8px;
+    accent-color: var(--c-accent);
+  }
+
+  .prose li.task-list-item:has(input:checked) {
+    color: var(--c-text-muted);
+    text-decoration: line-through;
+  }
+
   .prose > * + * {
     margin-top: var(--sp-5);
   }

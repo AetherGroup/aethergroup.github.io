@@ -8,6 +8,27 @@ const dateFields = ['date', 'updated'];
 
 const wideWidgets = new Set(['text', 'image']);
 
+/**
+ * remark-gfm (el que usa el sitio) marca las listas de tareas con
+ * `contains-task-list` y `task-list-item`. marked no lo hace, asi que el
+ * preview se veria distinto de la web. Se le anaden las mismas clases.
+ */
+const previewRenderer = new marked.Renderer();
+const baseList = previewRenderer.list.bind(previewRenderer);
+const baseListitem = previewRenderer.listitem.bind(previewRenderer);
+
+previewRenderer.list = (token) => {
+  const html = baseList(token);
+  if (!token.items?.some((item) => item.task)) return html;
+  return html.replace(/^<(ol|ul)>/, '<$1 class="contains-task-list">');
+};
+
+previewRenderer.listitem = (token) => {
+  const html = baseListitem(token);
+  if (!token.task) return html;
+  return html.replace(/^<li>/, '<li class="task-list-item">');
+};
+
 function fieldValue(field, data) {
   const value = data[field.name];
   if (value === undefined || value === null) {
@@ -257,7 +278,11 @@ export async function renderEditor(root, schema, collection, fileName) {
 
     let html = '';
     try {
-      html = marked.parse(markdown || '_No content yet._', { gfm: true, breaks: false });
+      html = marked.parse(markdown || '_No content yet._', {
+        gfm: true,
+        breaks: false,
+        renderer: previewRenderer,
+      });
     } catch (error) {
       previewHost.innerHTML = `<p class="adm-error">${error.message}</p>`;
       return;

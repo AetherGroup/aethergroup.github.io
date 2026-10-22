@@ -1274,6 +1274,38 @@
   background: var(--c-border);
 }
 
+.adm-palette__modes {
+  display: flex;
+  gap: 3px;
+  padding: 3px;
+  margin-bottom: 4px;
+  border-radius: var(--r-sm);
+  background: var(--c-surface-2);
+}
+
+.adm-palette__mode {
+  flex: 1 1 0;
+  padding: 5px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--c-text-muted);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.adm-palette__mode:hover {
+  color: var(--c-text-strong);
+}
+
+.adm-palette__mode.is-active {
+  background: var(--c-surface);
+  color: var(--c-text-strong);
+  box-shadow: var(--sh-sm);
+}
+
 .adm-palette.is-up {
   top: auto;
   bottom: calc(100% + 8px);

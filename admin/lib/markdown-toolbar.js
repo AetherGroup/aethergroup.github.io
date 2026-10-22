@@ -1,9 +1,9 @@
 const COLORS = [
-  { id: 'c-breaking', label: 'Breaking', tone: 'danger' },
-  { id: 'c-added', label: 'Added', tone: 'success' },
-  { id: 'c-fixed', label: 'Fixed', tone: 'info' },
-  { id: 'c-changed', label: 'Changed', tone: 'accent' },
-  { id: 'c-deprecated', label: 'Deprecated', tone: 'warning' },
+  { id: 'breaking', label: 'Breaking', tone: 'danger' },
+  { id: 'added', label: 'Added', tone: 'success' },
+  { id: 'fixed', label: 'Fixed', tone: 'info' },
+  { id: 'changed', label: 'Changed', tone: 'accent' },
+  { id: 'deprecated', label: 'Deprecated', tone: 'warning' },
 ];
 
 const BUTTONS = [
@@ -12,28 +12,50 @@ const BUTTONS = [
   { id: 'h3', text: 'H3', title: 'Heading 3' },
   { id: 'h4', text: 'H4', title: 'Heading 4' },
   { id: 'p', text: '¶', title: 'Paragraph (remove the heading)' },
+  { id: 'big', text: 'A+', title: 'Bigger text' },
+  { id: 'small', text: 'A−', title: 'Smaller text' },
   { sep: true },
   { id: 'bold', icon: 'bold', title: 'Bold (Ctrl+B)' },
   { id: 'italic', icon: 'italic', title: 'Italic (Ctrl+I)' },
+  { id: 'bolditalic', icon: 'boldItalic', title: 'Bold and italic' },
   { id: 'strike', icon: 'strike', title: 'Strikethrough' },
-  { id: 'code', icon: 'code', title: 'Inline code' },
+  { id: 'underline', icon: 'underline', title: 'Underline' },
+  { id: 'highlight', icon: 'highlight', title: 'Highlight' },
+  { sep: true },
+  { id: 'code', icon: 'code', title: 'Inline code (Ctrl+K)' },
+  { id: 'codeblock', icon: 'codeBlock', title: 'Code block' },
+  { id: 'sup', icon: 'sup', title: 'Superscript' },
+  { id: 'sub', icon: 'sub', title: 'Subscript' },
+  { id: 'kbd', icon: 'kbd', title: 'Keyboard key' },
   { sep: true },
   { id: 'ul', icon: 'listUl', title: 'Bullet list' },
   { id: 'ol', text: '1.', title: 'Numbered list' },
+  { id: 'task', icon: 'task', title: 'Task list' },
   { id: 'quote', icon: 'quote', title: 'Quote' },
   { sep: true },
   { id: 'link', icon: 'link', title: 'Link' },
   { id: 'image', icon: 'image', title: 'Image' },
-  { id: 'codeblock', icon: 'codeBlock', title: 'Code block' },
   { id: 'table', icon: 'table', title: 'Table' },
   { id: 'hr', icon: 'hr', title: 'Horizontal rule' },
+  { id: 'details', icon: 'details', title: 'Collapsible block' },
+  { id: 'br', icon: 'br', title: 'Line break' },
+  { sep: true },
+  { id: 'clear', icon: 'eraser', title: 'Clear the formatting' },
 ];
 
 const ACTIONS = {
   bold: { wrap: ['**', '**'] },
   italic: { wrap: ['*', '*'] },
+  bolditalic: { wrap: ['***', '***'] },
   strike: { wrap: ['~~', '~~'] },
+  underline: { wrap: ['<u>', '</u>'] },
+  highlight: { wrap: ['<mark>', '</mark>'] },
   code: { wrap: ['`', '`'] },
+  sup: { wrap: ['<sup>', '</sup>'] },
+  sub: { wrap: ['<sub>', '</sub>'] },
+  kbd: { wrap: ['<kbd>', '</kbd>'] },
+  big: { wrap: ['<span class="tx-big">', '</span>'] },
+  small: { wrap: ['<span class="tx-small">', '</span>'] },
   h1: { line: '# ' },
   h2: { line: '## ' },
   h3: { line: '### ' },
@@ -44,10 +66,18 @@ const ACTIONS = {
   link: { wrap: ['[', '](https://)'], placeholder: 'link text' },
   image: { wrap: ['![', '](https://)'], placeholder: 'alt text' },
   codeblock: { block: ['```\n', '\n```\n'], placeholder: 'code' },
+  details: {
+    block: [
+      '\n<details class="md-details">\n<summary>More</summary>\n\n',
+      '\n\n</details>\n',
+    ],
+    placeholder: 'Hidden text',
+  },
   table: {
     block: ['\n| Column | Column |\n| --- | --- |\n| Cell | Cell |\n', ''],
   },
   hr: { block: ['\n---\n', ''] },
+  br: { inline: '<br>\n' },
 };
 
 const SHORTCUTS = {
@@ -83,13 +113,17 @@ function surround(textarea, before, after, placeholder) {
   textarea.setSelectionRange(cursor, cursor + inner.length);
 }
 
-function prefixLines(textarea, prefix) {
+function blockRange(textarea) {
   const value = textarea.value;
   const start = value.lastIndexOf('\n', textarea.selectionStart - 1) + 1;
   let end = value.indexOf('\n', textarea.selectionEnd);
   if (end === -1) end = value.length;
+  return { start, end };
+}
 
-  const lines = value.slice(start, end).split('\n');
+function prefixLines(textarea, prefix) {
+  const { start, end } = blockRange(textarea);
+  const lines = textarea.value.slice(start, end).split('\n');
   const allPrefixed = lines.every((line) => line.startsWith(prefix));
   const nextLines = allPrefixed
     ? lines.map((line) => line.slice(prefix.length))
@@ -101,15 +135,28 @@ function prefixLines(textarea, prefix) {
 }
 
 function stripHeading(textarea) {
-  const value = textarea.value;
-  const start = value.lastIndexOf('\n', textarea.selectionStart - 1) + 1;
-  let end = value.indexOf('\n', textarea.selectionEnd);
-  if (end === -1) end = value.length;
-
-  const lines = value.slice(start, end).split('\n');
+  const { start, end } = blockRange(textarea);
+  const lines = textarea.value.slice(start, end).split('\n');
   const nextLines = lines.map((line) => line.replace(/^#{1,6}\s+/, ''));
   const block = nextLines.join('\n');
 
+  replaceRange(textarea, start, end, block);
+  textarea.setSelectionRange(start, start + block.length);
+}
+
+function toggleTask(textarea) {
+  const { start, end } = blockRange(textarea);
+  const lines = textarea.value.slice(start, end).split('\n');
+
+  const allDone = lines.every((line) => line.startsWith('- [x] '));
+  const allOpen = lines.every((line) => line.startsWith('- [ ] '));
+
+  let nextLines;
+  if (allDone) nextLines = lines.map((line) => line.replace(/^- \[x\] /, '- [ ] '));
+  else if (allOpen) nextLines = lines.map((line) => line.replace(/^- \[ \] /, '- [x] '));
+  else nextLines = lines.map((line) => '- [ ] ' + line.replace(/^(- \[[ x]\] )?/, ''));
+
+  const block = nextLines.join('\n');
   replaceRange(textarea, start, end, block);
   textarea.setSelectionRange(start, start + block.length);
 }
@@ -131,20 +178,80 @@ function insertBlock(textarea, open, close, placeholder) {
   }
 }
 
+function clearFormatting(textarea) {
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  if (start === end) return;
+
+  const selected = textarea.value.slice(start, end);
+  const cleaned = selected
+    .replace(/<\/?(?:u|mark|sup|sub|kbd|span)[^>]*>/g, '')
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/\*(.+?)\*/g, '$1')
+    .replace(/~~(.+?)~~/g, '$1')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/\[(.+?)\]\([^)]*\)/g, '$1')
+    .replace(/!\[(.+?)\]\([^)]*\)/g, '$1');
+
+  replaceRange(textarea, start, end, cleaned);
+  textarea.setSelectionRange(start, start + cleaned.length);
+}
+
+export function applyFormat(textarea, id) {
+  if (id === 'p') {
+    stripHeading(textarea);
+    return;
+  }
+
+  if (id === 'task') {
+    toggleTask(textarea);
+    return;
+  }
+
+  if (id === 'clear') {
+    clearFormatting(textarea);
+    return;
+  }
+
+  const action = ACTIONS[id];
+  if (!action) return;
+
+  if (action.wrap) {
+    surround(textarea, action.wrap[0], action.wrap[1], action.placeholder);
+    return;
+  }
+
+  if (action.line) {
+    prefixLines(textarea, action.line);
+    return;
+  }
+
+  if (action.inline) {
+    const at = textarea.selectionEnd;
+    replaceRange(textarea, at, at, action.inline);
+    textarea.setSelectionRange(at + action.inline.length, at + action.inline.length);
+    return;
+  }
+
+  if (action.block) {
+    insertBlock(textarea, action.block[0], action.block[1], action.placeholder);
+  }
+}
+
 function applyColor(textarea, className) {
   const start = textarea.selectionStart;
   const end = textarea.selectionEnd;
   const value = textarea.value;
   const selected = value.slice(start, end);
 
-  const span = /<span class="c-[a-z]+">([\s\S]*?)<\/span>/g;
+  const span = /<(span|mark) class="(?:c|bg)-[a-z]+">([\s\S]*?)<\/\1>/g;
   let match;
   let hit = null;
   while ((match = span.exec(value)) !== null) {
     const from = match.index;
     const to = match.index + match[0].length;
     if (from <= start && end <= to) {
-      hit = { from, to, inner: match[1] };
+      hit = { from, to, inner: match[2] };
       break;
     }
   }
@@ -162,30 +269,6 @@ function applyColor(textarea, className) {
   const next = `<span class="${className}">${selected}</span>`;
   replaceRange(textarea, start, end, next);
   textarea.setSelectionRange(start + next.length, start + next.length);
-}
-
-export function applyFormat(textarea, id) {
-  if (id === 'p') {
-    stripHeading(textarea);
-    return;
-  }
-
-  const action = ACTIONS[id];
-  if (!action) return;
-
-  if (action.wrap) {
-    surround(textarea, action.wrap[0], action.wrap[1], action.placeholder);
-    return;
-  }
-
-  if (action.line) {
-    prefixLines(textarea, action.line);
-    return;
-  }
-
-  if (action.block) {
-    insertBlock(textarea, action.block[0], action.block[1], action.placeholder);
-  }
 }
 
 function buttonMarkup(button) {
@@ -214,11 +297,15 @@ function colorMarkup() {
         <svg class="icon" aria-hidden="true"><use href="#i-palette" /></svg>
       </button>
       <span class="adm-palette" data-palette role="menu" hidden>
+        <span class="adm-palette__modes" data-modes>
+          <button class="adm-palette__mode is-active" type="button" data-mode="c">Text</button>
+          <button class="adm-palette__mode" type="button" data-mode="bg">Background</button>
+        </span>
         ${items}
         <span class="adm-palette__sep" aria-hidden="true"></span>
         <button class="adm-palette__item" type="button" role="menuitem" data-color="">
           <svg class="icon" aria-hidden="true"><use href="#i-cls" /></svg>
-          Quitar el color
+          Remove the color
         </button>
       </span>
     </span>`;
@@ -231,6 +318,8 @@ export function createToolbar(host, textarea) {
 
   const palette = host.querySelector('[data-palette]');
   const toggle = host.querySelector('[data-color-toggle]');
+  const modes = host.querySelector('[data-modes]');
+  let mode = 'c';
 
   const closePalette = () => {
     palette.hidden = true;
@@ -250,9 +339,18 @@ export function createToolbar(host, textarea) {
   });
 
   host.addEventListener('click', (event) => {
+    const modeButton = event.target.closest('[data-mode]');
+    if (modeButton) {
+      mode = modeButton.dataset.mode;
+      for (const button of modes.querySelectorAll('[data-mode]')) {
+        button.classList.toggle('is-active', button.dataset.mode === mode);
+      }
+      return;
+    }
+
     const swatch = event.target.closest('[data-color]');
     if (swatch) {
-      applyColor(textarea, swatch.dataset.color);
+      applyColor(textarea, swatch.dataset.color ? `${mode}-${swatch.dataset.color}` : '');
       closePalette();
       textarea.focus();
       return;
@@ -300,14 +398,28 @@ const CHEATS = [
   ['### Smaller', 'Heading 3'],
   ['**bold**', 'Bold'],
   ['*italic*', 'Italic'],
+  ['***both***', 'Bold and italic'],
   ['~~struck~~', 'Strikethrough'],
   ['`code`', 'Inline code'],
   ['[text](https://)', 'Link'],
   ['![alt](cover.png)', 'Image'],
   ['- item', 'Bullet list'],
   ['1. item', 'Numbered list'],
+  ['- [ ] item', 'Task list'],
   ['> quote', 'Quote'],
   ['---', 'Horizontal rule'],
+];
+
+const HTML_CHEATS = [
+  ['&lt;u&gt;text&lt;/u&gt;', 'Underline'],
+  ['&lt;mark&gt;text&lt;/mark&gt;', 'Highlight'],
+  ['&lt;sup&gt;text&lt;/sup&gt;', 'Superscript'],
+  ['&lt;sub&gt;text&lt;/sub&gt;', 'Subscript'],
+  ['&lt;kbd&gt;Ctrl&lt;/kbd&gt;', 'Keyboard key'],
+  ['&lt;span class="tx-big"&gt;', 'Bigger text'],
+  ['&lt;span class="tx-small"&gt;', 'Smaller text'],
+  ['&lt;details&gt;&lt;summary&gt;', 'Collapsible block'],
+  ['&lt;br&gt;', 'Line break'],
 ];
 
 const COLOR_CHEATS = [
@@ -316,6 +428,9 @@ const COLOR_CHEATS = [
   ['c-fixed', 'A fix'],
   ['c-changed', 'Something changed'],
   ['c-deprecated', 'Deprecated'],
+  ['bg-breaking', 'Breaking, on a coloured background'],
+  ['bg-added', 'New, on a coloured background'],
+  ['bg-fixed', 'A fix, on a coloured background'],
 ];
 
 export function createCheatsheet(host) {
@@ -338,6 +453,18 @@ export function createCheatsheet(host) {
       For a code block put three backticks on their own line, the code, and
       three more backticks.
     </p>
+    <p class="adm-cheatsheet__lead">
+      These need a little HTML. The buttons in the toolbar write them for you.
+    </p>
+    <dl class="adm-cheatsheet__list">
+      ${HTML_CHEATS.map(
+        ([syntax, what]) => `
+        <div class="adm-cheatsheet__row">
+          <dt><code>${syntax}</code></dt>
+          <dd>${what}</dd>
+        </div>`,
+      ).join('')}
+    </dl>
     <p class="adm-cheatsheet__lead">
       To colour a word, wrap it in a span. The colour button in the toolbar
       writes it for you.

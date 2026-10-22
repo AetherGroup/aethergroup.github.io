@@ -1,4 +1,4 @@
-# Aetherfox — Arquitectura del sitio
+﻿# Aetherfox — Arquitectura del sitio
 
 > Documento de arquitectura para la web de Aetherfox.
 > Base: mockup `Aetherfox — the browser with the extras left out.html`.
@@ -942,17 +942,39 @@ El sitio pinta esas clases en `05-components.css` con los tokens `--c-danger`, `
 
 > Markdown no tiene colores. Se usa HTML en linea, que Astro y `marked` dejan pasar tal cual. Es HTML minimo y controlado: solo la clase `c-*`, sin estilos en linea.
 
-#### 6.6.4 Tema
+#### 6.6.4 Todos los estilos de texto
+
+La barra de herramientas tiene 29 botones. Markdown se queda corto, asi que lo que no existe en el se escribe con HTML en linea, que Astro y `marked` dejan pasar tal cual.
+
+**Tamanos:** `H1` `H2` `H3` `H4` `¶` (párrafo normal), `A+` y `A−` (`<span class="tx-big">` y `tx-small`).
+
+**Enfasis:** negrita, cursiva, negrita+cursiva, tachado, subrayado (`<u>`) y resaltado (`<mark>`).
+
+**Marcas:** superindice (`<sup>`), subindice (`<sub>`) y tecla de teclado (`<kbd>`), que en un navegador tiene sentido.
+
+**Codigo:** en linea y bloque.
+
+**Listas:** con vinetas, numerada, de tareas (`- [ ]` y `- [x]`, con un boton que alterna entre pendiente y hecha) y cita.
+
+**Bloques:** enlace, imagen, tabla, linea horizontal, desplegable (`<details class="md-details">` con su `<summary>`) y salto de linea (`<br>`).
+
+**Limpiar formato** quita todo el marcado de la seleccion: `**negrita**`, `*cursiva*`, `~~tachado~~`, `` `codigo` ``, etiquetas y enlaces.
+
+**Color:** la paleta escribe el color del texto o del fondo. La diferencia se elige con el interruptor `Text` / `Background` de la propia paleta, y da cinco colores semanticos en cada modo (`c-breaking` y `bg-breaking`, etc.).
+
+> La lista de tareas la produce el sitio con `remark-gfm`, que marca el `<ul>` con `contains-task-list` y cada `<li>` con `task-list-item`. `marked`, que es lo que usa el preview, no lo hace, asi que el CMS le anade las mismas clases con un renderer propio. Si no, el preview se veria con vinetas y el sitio sin ellas.
+
+#### 6.6.5 Tema
 
 El CMS sigue al tema del sistema, igual que la web, con un conmutador en la cabecera (sol/luna) que recuerda la elección en `aetherfox:admin-theme`. El bootstrap va en un script inline en `admin/index.html` para que no haya parpadeo.
 
-#### 6.6.5 Autenticación y publicación
+#### 6.6.6 Autenticación y publicación
 
 El worker de `oauth-worker/` hace el OAuth de GitHub y pasa el token al CMS por `postMessage`. El token se guarda en `localStorage` (`aetherfox-admin:token`) y se usa contra la API de GitHub para listar, leer, escribir y borrar. Publicar es un commit: el sitio se reconstruye en el push.
 
 El listado de la API de GitHub va con un parámetro de caché (`?t=<timestamp>`): sin él, una entrada recién publicada no aparecía en la lista hasta que expiraba la caché del listing. El frontmatter se lee de `raw.githubusercontent.com` y se cachea 60 segundos en memoria, invalidándose al guardar.
 
-#### 6.6.6 Descargas
+#### 6.6.7 Descargas
 
 `scripts/fetch-release.mjs` resuelve la última release de GitHub en tiempo de build y escribe `src/data/releases.json`. Si la API falla, el build **no falla**: conserva el `releases.json` anterior. Un workflow diario vuelve a lanzarlo.
 
