@@ -903,19 +903,38 @@ El CMS no es un dashboard de tarjetas. Es una aplicación con dos zonas y una je
   - El buscador de la cabecera filtra la lista en vivo.
 - **Panel lateral**: estado (publicados, borradores, entradas, colecciones), actividad reciente (los commits que tocan `content/`) y enlaces al sitio, al repositorio y a las releases.
 
-**Editor:** el formulario son dos tarjetas (`Details` y `Content markdown`), con los campos cortos en rejilla de dos columnas, la vista previa en vivo a la derecha, y en la barra las acciones `Save`/`Publish` y `Delete`.
+**Editor:** el formulario son dos tarjetas (`Details` y `Content markdown`), con los campos cortos en rejilla de dos columnas, la vista previa en vivo a la derecha, y en la barra las acciones `Save`/`Publish` y `Delete`. El área de texto lleva una barra de herramientas que escribe el Markdown (ver 6.6.2).
 
-#### 6.6.2 Tema
+#### 6.6.2 Escribir en Markdown sin saber Markdown
+
+El contenido es un fichero Markdown, pero quien publica no debería tener que recordar la sintaxis. El editor lleva una **barra de herramientas** sobre el área de texto (`admin/lib/markdown-toolbar.js`) con todo lo que el sitio sabe renderizar:
+
+| Botones | Qué hacen |
+| --- | --- |
+| `H1` `H2` `H3` `H4` `¶` | Tamaño del texto. `¶` devuelve el párrafo a texto normal |
+| negrita, cursiva, tachado, código | Envuelven la selección. Si ya está envuelta, la desenvuelven |
+| viñetas, numeración, cita | Prefijan las líneas seleccionadas. Si ya llevan el prefijo, lo quitan |
+| enlace, imagen, bloque de código, tabla, línea | Insertan el bloque con el texto seleccionado ya dentro |
+
+La barra no escribe el Markdown a mano: parte de lo que hay seleccionado y devuelve el Markdown equivalente. En un enlace o una imagen, el texto queda seleccionado para escribirlo y la URL queda marcada para sustituirla.
+
+Atajos: `Ctrl+B` negrita, `Ctrl+I` cursiva, `Ctrl+K` código.
+
+Junto al botón de **Publicar** hay un **Cheat sheet** que abre la lista de las trece sintaxis que el sitio entiende, con el resultado de cada una. Y un contador de palabras al lado del título del panel.
+
+La vista previa se actualiza mientras se escribe, con el mismo renderizado que usa el sitio (GFM), así que lo que se ve en el CMS es lo que sale en la web.
+
+#### 6.6.3 Tema
 
 El CMS sigue al tema del sistema, igual que la web, con un conmutador en la cabecera (sol/luna) que recuerda la elección en `aetherfox:admin-theme`. El bootstrap va en un script inline en `admin/index.html` para que no haya parpadeo.
 
-#### 6.6.3 Autenticación y publicación
+#### 6.6.4 Autenticación y publicación
 
 El worker de `oauth-worker/` hace el OAuth de GitHub y pasa el token al CMS por `postMessage`. El token se guarda en `localStorage` (`aetherfox-admin:token`) y se usa contra la API de GitHub para listar, leer, escribir y borrar. Publicar es un commit: el sitio se reconstruye en el push.
 
 El listado de la API de GitHub va con un parámetro de caché (`?t=<timestamp>`): sin él, una entrada recién publicada no aparecía en la lista hasta que expiraba la caché del listing. El frontmatter se lee de `raw.githubusercontent.com` y se cachea 60 segundos en memoria, invalidándose al guardar.
 
-#### 6.6.4 Descargas
+#### 6.6.5 Descargas
 
 `scripts/fetch-release.mjs` resuelve la última release de GitHub en tiempo de build y escribe `src/data/releases.json`. Si la API falla, el build **no falla**: conserva el `releases.json` anterior. Un workflow diario vuelve a lanzarlo.
 

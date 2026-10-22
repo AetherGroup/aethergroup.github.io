@@ -1,6 +1,7 @@
 import { readFile, writeFile, deleteFile, repoBranch } from '../lib/api.js';
 import { marked } from '../vendor/marked.js';
 import { parseFrontmatter, stringifyFrontmatter, slugify, formatDate } from '../lib/markdown.js';
+import { createToolbar, createCheatsheet, attachShortcuts } from '../lib/markdown-toolbar.js';
 import { invalidateFrontmatter } from './collection.js';
 
 const dateFields = ['date', 'updated'];
@@ -184,7 +185,14 @@ export async function renderEditor(root, schema, collection, fileName) {
               <section class="adm-formpanel">
                 <h2 class="adm-formpanel__title">
                   Content <span class="adm-field__optional">markdown</span>
+                  <span class="adm-count" data-count></span>
+                  <button class="adm-help" type="button" data-help aria-expanded="false">
+                    <svg class="icon" aria-hidden="true"><use href="#i-help" /></svg>
+                    Cheat sheet
+                  </button>
                 </h2>
+                <div class="adm-cheatsheet" data-cheatsheet hidden></div>
+                <div class="adm-toolbar" data-toolbar role="toolbar" aria-label="Formatting"></div>
                 <textarea class="adm-input adm-input--body" id="f-body" name="body" rows="18">${escapeHtml(
                   body,
                 )}</textarea>
@@ -281,6 +289,28 @@ export async function renderEditor(root, schema, collection, fileName) {
   });
 
   renderPreview();
+
+  const bodyInput = form.querySelector('[name="body"]');
+  createToolbar(root.querySelector('[data-toolbar]'), bodyInput);
+  attachShortcuts(bodyInput);
+
+  const counter = root.querySelector('[data-count]');
+  const updateCount = () => {
+    const text = bodyInput.value.trim();
+    const words = text ? text.split(/\s+/).length : 0;
+    counter.textContent = `${words} ${words === 1 ? 'word' : 'words'}`;
+  };
+  bodyInput.addEventListener('input', updateCount);
+  updateCount();
+
+  const cheatsheet = root.querySelector('[data-cheatsheet]');
+  const helpButton = root.querySelector('[data-help]');
+  createCheatsheet(cheatsheet);
+  helpButton?.addEventListener('click', () => {
+    const open = cheatsheet.hidden;
+    cheatsheet.hidden = !open;
+    helpButton.setAttribute('aria-expanded', String(open));
+  });
 
   for (const toggle of form.querySelectorAll('[data-switch]')) {
     toggle.addEventListener('click', () => {

@@ -1090,12 +1090,163 @@
 }
 
 .adm-formpanel__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin: 0 0 16px;
   color: var(--c-text-muted);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+
+.adm-count {
+  color: var(--c-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+.adm-help {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 4px 10px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-full);
+  background: transparent;
+  color: var(--c-text-muted);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  cursor: pointer;
+  transition:
+    border-color 0.16s cubic-bezier(0.2, 0.8, 0.2, 1),
+    color 0.16s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.adm-help:hover {
+  border-color: var(--c-accent);
+  color: var(--c-accent);
+}
+
+.adm-help .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.adm-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 5px 6px;
+  border: 1px solid var(--c-border);
+  border-bottom: 0;
+  border-radius: var(--r-sm) var(--r-sm) 0 0;
+  background: var(--c-surface-2);
+}
+
+.adm-toolbar__btn {
+  display: grid;
+  place-items: center;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--c-text-muted);
+  cursor: pointer;
+  transition:
+    background 0.14s cubic-bezier(0.2, 0.8, 0.2, 1),
+    color 0.14s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.adm-toolbar__btn:hover {
+  background: var(--c-surface);
+  color: var(--c-text-strong);
+}
+
+.adm-toolbar__btn .icon {
+  width: 17px;
+  height: 17px;
+}
+
+.adm-toolbar__text {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.adm-toolbar__sep {
+  width: 1px;
+  height: 18px;
+  margin: 0 5px;
+  background: var(--c-border);
+}
+
+.adm-toolbar + .adm-input--body {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.adm-cheatsheet {
+  margin-bottom: 12px;
+  padding: 16px 18px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-sm);
+  background: var(--c-surface-2);
+}
+
+.adm-cheatsheet__lead {
+  margin: 0 0 12px;
+  color: var(--c-text-muted);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.adm-cheatsheet__lead:last-child {
+  margin: 12px 0 0;
+}
+
+.adm-cheatsheet__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 8px 22px;
+  margin: 0;
+}
+
+.adm-cheatsheet__row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.adm-cheatsheet__row dt {
+  margin: 0;
+}
+
+.adm-cheatsheet__row dd {
+  margin: 0;
+  color: var(--c-text-muted);
+  font-size: 12.5px;
+}
+
+.adm-cheatsheet code {
+  padding: 2px 6px;
+  border: 1px solid var(--c-border);
+  border-radius: 5px;
+  background: var(--c-surface);
+  color: var(--c-text-strong);
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 12px;
+  white-space: nowrap;
 }
 
 .adm-formgrid {
