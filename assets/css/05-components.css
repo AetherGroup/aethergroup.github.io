@@ -1120,6 +1120,36 @@
     line-height: 1.7;
   }
 
+  /* -------------------------------------------------------------------------
+     Texto con color. Lo inserta el CMS con la barra de herramientas, como
+     <span class="c-breaking">. Los colores son semanticos, no libres.
+     ---------------------------------------------------------------------- */
+
+  .c-breaking {
+    color: var(--c-danger);
+    font-weight: 700;
+  }
+
+  .c-added {
+    color: var(--c-success);
+    font-weight: 600;
+  }
+
+  .c-fixed {
+    color: var(--c-info);
+    font-weight: 600;
+  }
+
+  .c-changed {
+    color: var(--c-accent);
+    font-weight: 600;
+  }
+
+  .c-deprecated {
+    color: var(--c-warning);
+    font-weight: 600;
+  }
+
   .prose > * + * {
     margin-top: var(--sp-5);
   }

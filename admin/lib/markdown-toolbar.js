@@ -1,3 +1,11 @@
+const COLORS = [
+  { id: 'c-breaking', label: 'Breaking', tone: 'danger' },
+  { id: 'c-added', label: 'Added', tone: 'success' },
+  { id: 'c-fixed', label: 'Fixed', tone: 'info' },
+  { id: 'c-changed', label: 'Changed', tone: 'accent' },
+  { id: 'c-deprecated', label: 'Deprecated', tone: 'warning' },
+];
+
 const BUTTONS = [
   { id: 'h1', text: 'H1', title: 'Heading 1' },
   { id: 'h2', text: 'H2', title: 'Heading 2' },
@@ -123,6 +131,39 @@ function insertBlock(textarea, open, close, placeholder) {
   }
 }
 
+function applyColor(textarea, className) {
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const value = textarea.value;
+  const selected = value.slice(start, end);
+
+  const span = /<span class="c-[a-z]+">([\s\S]*?)<\/span>/g;
+  let match;
+  let hit = null;
+  while ((match = span.exec(value)) !== null) {
+    const from = match.index;
+    const to = match.index + match[0].length;
+    if (from <= start && end <= to) {
+      hit = { from, to, inner: match[1] };
+      break;
+    }
+  }
+
+  if (hit) {
+    const next = className ? `<span class="${className}">${hit.inner}</span>` : hit.inner;
+    replaceRange(textarea, hit.from, hit.to, next);
+    textarea.setSelectionRange(hit.from, hit.from + next.length);
+    return;
+  }
+
+  if (!className) return;
+  if (!selected.trim()) return;
+
+  const next = `<span class="${className}">${selected}</span>`;
+  replaceRange(textarea, start, end, next);
+  textarea.setSelectionRange(start + next.length, start + next.length);
+}
+
 export function applyFormat(textarea, id) {
   if (id === 'p') {
     stripHeading(textarea);
@@ -157,20 +198,87 @@ function buttonMarkup(button) {
   return `<button class="adm-toolbar__btn" type="button" data-format="${button.id}" title="${button.title}" aria-label="${button.title}">${face}</button>`;
 }
 
+function colorMarkup() {
+  const items = COLORS.map(
+    (color) => `
+    <button class="adm-palette__item" type="button" role="menuitem" data-color="${color.id}">
+      <i class="adm-palette__dot adm-palette__dot--${color.tone}"></i>
+      ${color.label}
+    </button>`,
+  ).join('');
+
+  return `
+    <span class="adm-toolbar__color">
+      <button class="adm-toolbar__btn" type="button" data-color-toggle aria-haspopup="menu"
+              aria-expanded="false" title="Color" aria-label="Color">
+        <svg class="icon" aria-hidden="true"><use href="#i-palette" /></svg>
+      </button>
+      <span class="adm-palette" data-palette role="menu" hidden>
+        ${items}
+        <span class="adm-palette__sep" aria-hidden="true"></span>
+        <button class="adm-palette__item" type="button" role="menuitem" data-color="">
+          <svg class="icon" aria-hidden="true"><use href="#i-cls" /></svg>
+          Quitar el color
+        </button>
+      </span>
+    </span>`;
+}
+
 export function createToolbar(host, textarea) {
   if (!host || !textarea) return;
 
-  host.innerHTML = BUTTONS.map(buttonMarkup).join('');
+  host.innerHTML = `${BUTTONS.map(buttonMarkup).join('')}${colorMarkup()}`;
+
+  const palette = host.querySelector('[data-palette]');
+  const toggle = host.querySelector('[data-color-toggle]');
+
+  const closePalette = () => {
+    palette.hidden = true;
+    toggle.setAttribute('aria-expanded', 'false');
+  };
+
+  const openPalette = () => {
+    palette.hidden = false;
+    palette.classList.remove('is-up');
+    const rect = toggle.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    if (spaceBelow < palette.offsetHeight + 24) palette.classList.add('is-up');
+  };
 
   host.addEventListener('mousedown', (event) => {
     if (event.target.closest('button')) event.preventDefault();
   });
 
   host.addEventListener('click', (event) => {
+    const swatch = event.target.closest('[data-color]');
+    if (swatch) {
+      applyColor(textarea, swatch.dataset.color);
+      closePalette();
+      textarea.focus();
+      return;
+    }
+
+    if (event.target.closest('[data-color-toggle]')) {
+      if (palette.hidden) openPalette();
+      else closePalette();
+      return;
+    }
+
     const button = event.target.closest('[data-format]');
     if (!button) return;
     applyFormat(textarea, button.dataset.format);
     textarea.focus();
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!palette.hidden && !host.contains(event.target)) closePalette();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !palette.hidden) {
+      closePalette();
+      textarea.focus();
+    }
   });
 }
 
@@ -202,6 +310,14 @@ const CHEATS = [
   ['---', 'Horizontal rule'],
 ];
 
+const COLOR_CHEATS = [
+  ['c-breaking', 'Breaking change'],
+  ['c-added', 'Something new'],
+  ['c-fixed', 'A fix'],
+  ['c-changed', 'Something changed'],
+  ['c-deprecated', 'Deprecated'],
+];
+
 export function createCheatsheet(host) {
   if (!host) return;
 
@@ -221,5 +337,18 @@ export function createCheatsheet(host) {
     <p class="adm-cheatsheet__lead">
       For a code block put three backticks on their own line, the code, and
       three more backticks.
-    </p>`;
+    </p>
+    <p class="adm-cheatsheet__lead">
+      To colour a word, wrap it in a span. The colour button in the toolbar
+      writes it for you.
+    </p>
+    <dl class="adm-cheatsheet__list">
+      ${COLOR_CHEATS.map(
+        ([name, what]) => `
+        <div class="adm-cheatsheet__row">
+          <dt><code>&lt;span class="${name}"&gt;</code></dt>
+          <dd>${what}</dd>
+        </div>`,
+      ).join('')}
+    </dl>`;
 }

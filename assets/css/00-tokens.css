@@ -19,6 +19,12 @@
   --c-gradient-primary: linear-gradient(135deg, #7b6bf0, #5b4bd8);
   --c-warning: #b45309;
   --c-warning-soft: rgba(180, 83, 9, 0.12);
+  --c-danger: #c02626;
+  --c-danger-soft: rgba(192, 38, 38, 0.12);
+  --c-success: #167a4a;
+  --c-success-soft: rgba(22, 122, 74, 0.12);
+  --c-info: #1d63c4;
+  --c-info-soft: rgba(29, 99, 196, 0.12);
 }
 
 :root[data-theme='dark'] {
@@ -35,6 +41,12 @@
   --c-shadow: rgba(0, 0, 0, 0.6);
   --c-warning: #fbbf24;
   --c-warning-soft: rgba(251, 191, 36, 0.14);
+  --c-danger: #ff8a8a;
+  --c-danger-soft: rgba(255, 138, 138, 0.14);
+  --c-success: #4ade80;
+  --c-success-soft: rgba(74, 222, 128, 0.14);
+  --c-info: #7cb8ff;
+  --c-info-soft: rgba(124, 184, 255, 0.14);
 }
 
 :root[data-theme='purple'] {
@@ -51,6 +63,12 @@
   --c-shadow: rgba(108, 92, 231, 0.5);
   --c-warning: #fbbf24;
   --c-warning-soft: rgba(251, 191, 36, 0.14);
+  --c-danger: #ff8a8a;
+  --c-danger-soft: rgba(255, 138, 138, 0.14);
+  --c-success: #4ade80;
+  --c-success-soft: rgba(74, 222, 128, 0.14);
+  --c-info: #7cb8ff;
+  --c-info-soft: rgba(124, 184, 255, 0.14);
 }
 
 :root[data-theme='black'] {
@@ -67,6 +85,12 @@
   --c-shadow: rgba(0, 0, 0, 0.8);
   --c-warning: #fbbf24;
   --c-warning-soft: rgba(251, 191, 36, 0.14);
+  --c-danger: #ff8a8a;
+  --c-danger-soft: rgba(255, 138, 138, 0.14);
+  --c-success: #4ade80;
+  --c-success-soft: rgba(74, 222, 128, 0.14);
+  --c-info: #7cb8ff;
+  --c-info-soft: rgba(124, 184, 255, 0.14);
 }
 
 :root[data-theme='aetherlight'] {
@@ -86,6 +110,12 @@
   --c-shadow: rgba(59, 47, 143, 0.4);
   --c-warning: #b45309;
   --c-warning-soft: rgba(180, 83, 9, 0.12);
+  --c-danger: #c02626;
+  --c-danger-soft: rgba(192, 38, 38, 0.12);
+  --c-success: #167a4a;
+  --c-success-soft: rgba(22, 122, 74, 0.12);
+  --c-info: #1d63c4;
+  --c-info-soft: rgba(29, 99, 196, 0.12);
 }
 
 :root[data-theme='aetherdark'] {
@@ -105,6 +135,12 @@
   --c-shadow: rgba(0, 0, 0, 0.6);
   --c-warning: #fbbf24;
   --c-warning-soft: rgba(251, 191, 36, 0.14);
+  --c-danger: #ff8a8a;
+  --c-danger-soft: rgba(255, 138, 138, 0.14);
+  --c-success: #4ade80;
+  --c-success-soft: rgba(74, 222, 128, 0.14);
+  --c-info: #7cb8ff;
+  --c-info-soft: rgba(124, 184, 255, 0.14);
 }
 
 :root {

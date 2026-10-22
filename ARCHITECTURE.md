@@ -924,17 +924,35 @@ Junto al botón de **Publicar** hay un **Cheat sheet** que abre la lista de las 
 
 La vista previa se actualiza mientras se escribe, con el mismo renderizado que usa el sitio (GFM), así que lo que se ve en el CMS es lo que sale en la web.
 
-#### 6.6.3 Tema
+#### 6.6.3 Colores en el texto
+
+En un changelog no siempre sirve el mismo estilo: un cambio que rompe la API no debería leerse igual que un arreglo. El CMS tiene un botón de paleta que marca la selección con un color **semántico**, no libre:
+
+| Clase | Color | Para qué |
+| --- | --- | --- |
+| `c-breaking` | rojo | Rompe la API o el formato |
+| `c-added` | verde | Novedad |
+| `c-fixed` | azul | Arreglo |
+| `c-changed` | morado (acento) | Cambio de comportamiento |
+| `c-deprecated` | ámbar | Obsoleto |
+
+La barra escribe `<span class="c-breaking">texto</span>` alrededor de lo seleccionado. Si el texto ya tenía un color, se cambia el color en lugar de anidar otro span, y la opción **Quitar el color** lo deja limpio.
+
+El sitio pinta esas clases en `05-components.css` con los tokens `--c-danger`, `--c-success`, `--c-info`, `--c-accent` y `--c-warning`, que se definieron para los seis temas. La vista previa del CMS carga ese mismo fichero, así que el color que se ve al escribir es exactamente el que sale en la web.
+
+> Markdown no tiene colores. Se usa HTML en linea, que Astro y `marked` dejan pasar tal cual. Es HTML minimo y controlado: solo la clase `c-*`, sin estilos en linea.
+
+#### 6.6.4 Tema
 
 El CMS sigue al tema del sistema, igual que la web, con un conmutador en la cabecera (sol/luna) que recuerda la elección en `aetherfox:admin-theme`. El bootstrap va en un script inline en `admin/index.html` para que no haya parpadeo.
 
-#### 6.6.4 Autenticación y publicación
+#### 6.6.5 Autenticación y publicación
 
 El worker de `oauth-worker/` hace el OAuth de GitHub y pasa el token al CMS por `postMessage`. El token se guarda en `localStorage` (`aetherfox-admin:token`) y se usa contra la API de GitHub para listar, leer, escribir y borrar. Publicar es un commit: el sitio se reconstruye en el push.
 
 El listado de la API de GitHub va con un parámetro de caché (`?t=<timestamp>`): sin él, una entrada recién publicada no aparecía en la lista hasta que expiraba la caché del listing. El frontmatter se lee de `raw.githubusercontent.com` y se cachea 60 segundos en memoria, invalidándose al guardar.
 
-#### 6.6.5 Descargas
+#### 6.6.6 Descargas
 
 `scripts/fetch-release.mjs` resuelve la última release de GitHub en tiempo de build y escribe `src/data/releases.json`. Si la API falla, el build **no falla**: conserva el `releases.json` anterior. Un workflow diario vuelve a lanzarlo.
 
